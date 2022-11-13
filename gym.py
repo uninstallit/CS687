@@ -81,6 +81,8 @@ class Pong:
         self.midfield.penup()
         self.midfield.goto(250, 0)
 
+        self.silent = False
+
     def reset(self):
         # reset scores
         self.left_player = 0
@@ -111,6 +113,9 @@ class Pong:
         self.hit_ball.goto(0, 0)
         self.hit_ball.dx = 5
         self.hit_ball.dy = -5
+        
+        # update screen
+        self.render()
 
         return [
             self.left_pad.xcor(),
@@ -164,7 +169,9 @@ class Pong:
         )
 
     def step(self, action):
-        self.sc.update()
+        # runs faster
+        if self.silent == False:
+            self.sc.update()
 
         # hit ball
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
@@ -199,7 +206,7 @@ class Pong:
             self.left_player += 1
             self.update_score_board()
             # reward for losing
-            reward = reward - 10
+            reward = reward - 1
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
@@ -208,6 +215,7 @@ class Pong:
             self.update_score_board()
             # reward for winning
             reward = reward + 10
+            self.silent = False
 
         # pad ball collision
         rp_xcollision = self.right_pad.xcor() - 30
@@ -247,6 +255,8 @@ class Pong:
             and self.right_pad.xcor() > -250
         ):
             reward = reward + 0.5
+        else:
+            reward = reward - 0.5
 
         state = [
             self.left_pad.xcor(),
@@ -260,11 +270,17 @@ class Pong:
 
         done = False
         if self.left_player == 1:
-            self.left_player = 0
-            self.reset()
             done = True
+            self.reset()
 
         return state, reward, done
 
     def render(self):
         self.sc.update()
+
+    def set_silent(self, silent):
+        if silent == True: 
+            self.sc.tracer(0)
+        else: 
+            self.sc.tracer(1)
+        self.silent = silent

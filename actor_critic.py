@@ -38,11 +38,12 @@ def main():
     episode_count = 0
 
     model = create_model(num_inputs, num_hidden, num_actions)
-    optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    optimizer = keras.optimizers.Adam(learning_rate=0.01)
     huber_loss = keras.losses.Huber()
 
     # Create the environment
     pong = Pong()
+    pong.set_silent(True)
 
     while True:  # Run until solved
         state = pong.reset()
