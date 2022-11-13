@@ -141,6 +141,7 @@ def test():
 sc.listen()
 sc.onkeypress(paddleaup, "e")
 sc.onkeypress(paddleadown, "x")
+
 sc.onkeypress(paddlebup, "Up")
 sc.onkeypress(paddlebdown, "Down")
 sc.onkeypress(paddlebleft, "Left")
@@ -152,7 +153,6 @@ sc.onkeypress(test, "i")
 
 while True:
     sc.update()
-    # print(hit_ball.pos())
 
     hit_ball.setx(hit_ball.xcor() + hit_ball.dx)
     hit_ball.sety(hit_ball.ycor() + hit_ball.dy)
