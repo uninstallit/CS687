@@ -168,7 +168,6 @@ while True:
 
     if hit_ball.xcor() > 500:
         hit_ball.goto(0, 0)
-        hit_ball.dy *= -1
         left_player += 1
         sketch.clear()
         sketch.write(
@@ -179,7 +178,6 @@ while True:
 
     if hit_ball.xcor() < -500:
         hit_ball.goto(0, 0)
-        hit_ball.dy *= -1
         right_player += 1
         sketch.clear()
         sketch.write(

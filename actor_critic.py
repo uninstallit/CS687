@@ -9,8 +9,8 @@ import time
 def create_model(num_inputs, num_hidden, num_actions):
     inputs = layers.Input(shape=(num_inputs,))
     common = layers.Dense(num_hidden, activation="relu")(inputs)
-    common = layers.Dense(num_hidden, activation="relu")(common)
-    common = layers.Dense(num_hidden, activation="relu")(common)
+    # common = layers.Dense(num_hidden, activation="relu")(common)
+    # common = layers.Dense(num_hidden, activation="relu")(common)
     action = layers.Dense(num_actions, activation="softmax")(common)
     critic = layers.Dense(1)(common)
     model = keras.Model(inputs=inputs, outputs=[action, critic])
@@ -38,13 +38,12 @@ def main():
     episode_count = 0
 
     model = create_model(num_inputs, num_hidden, num_actions)
-    optimizer = keras.optimizers.Adam(learning_rate=0.01)
+    optimizer = keras.optimizers.Adam(learning_rate=0.001)
     huber_loss = keras.losses.Huber()
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(True)
-
+ 
     while True:  # Run until solved
         state = pong.reset()
 
@@ -127,11 +126,15 @@ def main():
             template = "running reward: {:.2f} at episode {}"
             print(template.format(running_reward, episode_count))
             
-        if running_reward > 100:
+        if running_reward >= 100:
             pong.set_silent(False)
+            
+        if running_reward < 100:
+            print("\nSilent mode on!")
+            pong.set_silent(True)
 
         # condition to consider the task solved
-        if running_reward > 500:
+        if running_reward > 1000:
             print("Solved at episode {}!".format(episode_count))
             break
 

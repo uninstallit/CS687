@@ -1,6 +1,6 @@
 # Import required library
 import turtle
-from enum import Enum
+import numpy as np
 
 # import random
 
@@ -81,6 +81,8 @@ class Pong:
         self.midfield.penup()
         self.midfield.goto(250, 0)
 
+        self.dy = 5
+        self.dx = 5
         self.silent = False
 
     def reset(self):
@@ -111,9 +113,11 @@ class Pong:
         self.hit_ball.color("black")
         self.hit_ball.penup()
         self.hit_ball.goto(0, 0)
+
         self.hit_ball.dx = 5
-        self.hit_ball.dy = -5
-        
+        rng = np.random.default_rng()
+        self.hit_ball.dy = rng.uniform(low=-5.0, high=5.0)
+
         # update screen
         self.render()
 
@@ -130,32 +134,32 @@ class Pong:
     # functions to move pad vertically
     def pad_a_up(self):
         y = self.left_pad.ycor()
-        y += 20
+        y += self.dy
         self.left_pad.sety(y)
 
     def pad_a_down(self):
         y = self.left_pad.ycor()
-        y -= 20
+        y -= self.dy
         self.left_pad.sety(y)
 
     def pad_b_up(self):
         y = self.right_pad.ycor()
-        y += 20
+        y += self.dy
         self.right_pad.sety(y)
 
     def pad_b_down(self):
         y = self.right_pad.ycor()
-        y -= 20
+        y -= self.dy
         self.right_pad.sety(y)
 
     def pad_b_left(self):
         x = self.right_pad.xcor()
-        x -= 20
+        x -= self.dx
         self.right_pad.setx(x)
 
     def pad_b_right(self):
         x = self.right_pad.xcor()
-        x += 20
+        x += self.dx
         self.right_pad.setx(x)
 
     def update_score_board(self):
@@ -202,15 +206,13 @@ class Pong:
 
         if self.hit_ball.xcor() > 500:
             self.hit_ball.goto(0, 0)
-            self.hit_ball.dy *= -1
             self.left_player += 1
             self.update_score_board()
             # reward for losing
-            reward = reward - 1
+            reward = reward - 10
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
-            self.hit_ball.dy *= -1
             self.right_player += 1
             self.update_score_board()
             # reward for winning
@@ -243,10 +245,6 @@ class Pong:
             self.hit_ball.setx(lp_xcollision)
             self.hit_ball.dx *= -1
 
-        # reward for having the same y as the ball
-        if self.hit_ball.ycor() == self.right_pad.ycor():
-            reward = reward + 1
-
         # reward for staying within borders
         if (
             self.right_pad.ycor() < 200
@@ -254,7 +252,7 @@ class Pong:
             and self.right_pad.xcor() < 500
             and self.right_pad.xcor() > -250
         ):
-            reward = reward + 0.5
+            reward = reward
         else:
             reward = reward - 0.5
 
@@ -279,8 +277,8 @@ class Pong:
         self.sc.update()
 
     def set_silent(self, silent):
-        if silent == True: 
+        if silent == True:
             self.sc.tracer(0)
-        else: 
+        else:
             self.sc.tracer(1)
         self.silent = silent
