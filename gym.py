@@ -198,6 +198,7 @@ class Pong:
             self.hit_ball.dy *= -1
             self.left_player += 1
             self.update_score_board()
+            # reward for losing
             reward = reward - 10
 
         if self.hit_ball.xcor() < -500:
@@ -205,6 +206,7 @@ class Pong:
             self.hit_ball.dy *= -1
             self.right_player += 1
             self.update_score_board()
+            # reward for winning
             reward = reward + 10
 
         # pad ball collision
@@ -215,8 +217,8 @@ class Pong:
         ):
             self.hit_ball.setx(rp_xcollision)
             self.hit_ball.dx *= -1
-            # hit ball reward
-            reward = reward + 1
+            # reward for hitting the ball
+            reward = reward + 5
 
         lp_xcollision = self.left_pad.xcor() + 30
         if self.hit_ball.xcor() == lp_xcollision:
@@ -234,7 +236,7 @@ class Pong:
             self.hit_ball.dx *= -1
             
         if self.hit_ball.ycor() == self.right_pad.ycor():
-            reward = reward + 0.01
+            reward = reward + 1
 
         state = [
             self.left_pad.xcor(),
