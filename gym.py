@@ -234,9 +234,19 @@ class Pong:
             # hit ball
             self.hit_ball.setx(lp_xcollision)
             self.hit_ball.dx *= -1
-            
+
+        # reward for having the same y as the ball
         if self.hit_ball.ycor() == self.right_pad.ycor():
             reward = reward + 1
+
+        # reward for staying within borders
+        if (
+            self.right_pad.ycor() < 200
+            and self.right_pad.ycor() > -280
+            and self.right_pad.xcor() < 500
+            and self.right_pad.xcor() > -250
+        ):
+            reward = reward + 0.5
 
         state = [
             self.left_pad.xcor(),
