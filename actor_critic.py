@@ -129,7 +129,7 @@ def main():
             template = "running reward: {:.2f} at episode {}"
             print(template.format(running_reward, episode_count))
 
-        if running_reward >= 100:
+        if running_reward >= 100 :
             pong.set_silent(False)
 
         # condition to consider the task solved

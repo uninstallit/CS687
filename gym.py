@@ -81,8 +81,8 @@ class Pong:
         self.midfield.penup()
         self.midfield.goto(250, 0)
 
-        self.dy = 5
-        self.dx = 5
+        self.dy = 2
+        self.dx = 2
         self.silent = False
 
     def reset(self):
@@ -217,7 +217,7 @@ class Pong:
             # self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for losing
-            reward = reward - 10
+            # reward = reward - 10
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
