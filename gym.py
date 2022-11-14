@@ -178,19 +178,16 @@ class Pong:
             self.right_pad.ycor() < 280
             and self.right_pad.ycor() > -280
             and self.right_pad.xcor() < 500
-            and self.right_pad.xcor() > -250
+            # and self.right_pad.xcor() > -250
         ):
             return True
         else:
             return False
 
-    def step(self, action):
-        # runs faster
-        if self.silent == False:
-            self.sc.update()
+    def step(self, action, timestep):
 
-        if self.is_paddle_within_bounds():
-
+        if self.is_paddle_within_bounds() and timestep % 2 == 0:
+        
             # move paddle given action
             if action == 0:
                 self.pad_b_up()
@@ -260,6 +257,10 @@ class Pong:
         # hit ball
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
         self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
+
+        # runs faster
+        if self.silent == False:
+            self.sc.update()
 
         state = [
             self.left_pad.xcor(),

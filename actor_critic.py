@@ -4,6 +4,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from gym import Pong
 import time
+import random
 
 
 def create_model(num_inputs, num_hidden, num_actions):
@@ -38,14 +39,15 @@ def main():
     episode_count = 0
 
     model = create_model(num_inputs, num_hidden, num_actions)
-    optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+    optimizer = keras.optimizers.Adam(learning_rate=0.01)
     huber_loss = keras.losses.Huber()
 
     # Create the environment
     pong = Pong()
     pong.set_silent(True)
 
-    while True:  # Run until solved
+    # run until solved
+    while True: 
         state = pong.reset()
 
         episode_reward = 0
@@ -67,7 +69,7 @@ def main():
                 # time.sleep(3)
 
                 # Apply the sampled action in our environment
-                state, reward, done = pong.step(action)
+                state, reward, done = pong.step(action, timestep)
                 rewards_history.append(reward)
                 episode_reward += reward
 
