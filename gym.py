@@ -172,21 +172,35 @@ class Pong:
             font=("Courier", 24, "normal"),
         )
 
+    def is_paddle_within_bounds(self):
+
+        if (
+            self.right_pad.ycor() < 280
+            and self.right_pad.ycor() > -280
+            and self.right_pad.xcor() < 500
+            and self.right_pad.xcor() > -250
+        ):
+            return True
+        else:
+            return False
+
     def step(self, action):
         # runs faster
         if self.silent == False:
             self.sc.update()
 
-        # move paddle given action
-        if action == 0:
-            self.pad_b_up()
-        elif action == 1:
-            self.pad_b_down()
-        elif action == 2:
-            self.pad_b_left()
-        elif action == 3:
-            self.pad_b_right()
-        # else do nothing
+        if self.is_paddle_within_bounds():
+
+            # move paddle given action
+            if action == 0:
+                self.pad_b_up()
+            elif action == 1:
+                self.pad_b_down()
+            elif action == 2:
+                self.pad_b_left()
+            elif action == 3:
+                self.pad_b_right()
+            # else do nothing
 
         # step rewward
         reward = 0
@@ -242,17 +256,6 @@ class Pong:
             # hit ball
             self.hit_ball.setx(lp_xcollision)
             self.hit_ball.dx *= -1
-
-        # reward for staying within borders
-        if (
-            self.right_pad.ycor() < 200
-            and self.right_pad.ycor() > -280
-            and self.right_pad.xcor() < 500
-            and self.right_pad.xcor() > -250
-        ):
-            reward = reward
-        else:
-            reward = reward - 0.5
 
         # hit ball
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)

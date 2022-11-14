@@ -44,7 +44,7 @@ def main():
     # Create the environment
     pong = Pong()
     pong.set_silent(True)
- 
+
     while True:  # Run until solved
         state = pong.reset()
 
@@ -126,7 +126,7 @@ def main():
         if episode_count % 10 == 0:
             template = "running reward: {:.2f} at episode {}"
             print(template.format(running_reward, episode_count))
-            
+
         if running_reward >= 100:
             pong.set_silent(False)
 
