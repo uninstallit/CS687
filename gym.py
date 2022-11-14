@@ -177,10 +177,6 @@ class Pong:
         if self.silent == False:
             self.sc.update()
 
-        # hit ball
-        self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
-        self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
-
         # move paddle given action
         if action == 0:
             self.pad_b_up()
@@ -207,6 +203,7 @@ class Pong:
         if self.hit_ball.xcor() > 500:
             self.hit_ball.goto(0, 0)
             self.left_player += 1
+            self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for losing
             reward = reward - 10
@@ -214,6 +211,7 @@ class Pong:
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
             self.right_player += 1
+            self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for winning
             reward = reward + 10
@@ -255,6 +253,10 @@ class Pong:
             reward = reward
         else:
             reward = reward - 0.5
+
+        # hit ball
+        self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
+        self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
 
         state = [
             self.left_pad.xcor(),
