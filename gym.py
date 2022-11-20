@@ -81,9 +81,11 @@ class Pong:
         self.midfield.penup()
         self.midfield.goto(250, 0)
 
-        self.dy = 2
-        self.dx = 2
+        self.dy = 5
+        self.dx = 5
         self.silent = False
+
+        self.label = 4
 
     def reset(self):
         # reset scores
@@ -129,6 +131,7 @@ class Pong:
             self.hit_ball.xcor(),
             self.hit_ball.ycor(),
             self.hit_ball.dx,
+            self.hit_ball.dy,
         ]
 
     # functions to move pad vertically
@@ -143,21 +146,25 @@ class Pong:
         self.left_pad.sety(y)
 
     def pad_b_up(self):
+        self.label = 0
         y = self.right_pad.ycor()
         y += self.dy
         self.right_pad.sety(y)
 
     def pad_b_down(self):
+        self.label = 1
         y = self.right_pad.ycor()
         y -= self.dy
         self.right_pad.sety(y)
 
     def pad_b_left(self):
+        self.label = 2
         x = self.right_pad.xcor()
         x -= self.dx
         self.right_pad.setx(x)
 
     def pad_b_right(self):
+        self.label = 3
         x = self.right_pad.xcor()
         x += self.dx
         self.right_pad.setx(x)
@@ -185,19 +192,16 @@ class Pong:
             return False
 
     def step(self, action, timestep):
-
-        if self.is_paddle_within_bounds() and timestep % 2 == 0:
-        
-            # move paddle given action
-            if action == 0:
-                self.pad_b_up()
-            elif action == 1:
-                self.pad_b_down()
-            elif action == 2:
-                self.pad_b_left()
-            elif action == 3:
-                self.pad_b_right()
-            # else do nothing
+        # move paddle given action
+        if action == 0:
+            self.pad_b_up()
+        elif action == 1:
+            self.pad_b_down()
+        elif action == 2:
+            self.pad_b_left()
+        elif action == 3:
+            self.pad_b_right()
+        # else do nothing
 
         # step rewward
         reward = 0
@@ -250,7 +254,7 @@ class Pong:
             else:
                 self.left_pad.sety(y_lpad + y_delta)
 
-            # hit ball
+            # hit balls
             self.hit_ball.setx(lp_xcollision)
             self.hit_ball.dx *= -1
 
@@ -270,6 +274,7 @@ class Pong:
             self.hit_ball.xcor(),
             self.hit_ball.ycor(),
             self.hit_ball.dx,
+            self.hit_ball.dy,
         ]
 
         done = False
@@ -277,7 +282,7 @@ class Pong:
             done = True
             self.reset()
 
-        return state, reward, done
+        return state, reward, done, self.label
 
     def render(self):
         self.sc.update()

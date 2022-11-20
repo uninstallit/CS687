@@ -4,7 +4,6 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from gym import Pong
 import time
-import random
 
 
 def create_model(num_inputs, num_hidden, num_actions):
@@ -13,8 +12,15 @@ def create_model(num_inputs, num_hidden, num_actions):
     common = layers.Dense(num_hidden, activation="relu")(common)
     common = layers.Dense(num_hidden, activation="relu")(common)
     action = layers.Dense(num_actions, activation="softmax")(common)
-    critic = layers.Dense(1)(common)
+    critic = layers.Dense(1, activation="relu")(common)
     model = keras.Model(inputs=inputs, outputs=[action, critic])
+    return model
+
+
+def create_critic_model(num_hidden):
+    inputs = layers.Input(shape=(num_hidden,))
+    critic = layers.Dense(1, activation="relu")(inputs)
+    model = keras.Model(inputs=inputs, outputs=[critic])
     return model
 
 
@@ -28,7 +34,7 @@ def main():
     eps = np.finfo(np.float32).eps.item()
 
     # Model parameters
-    num_inputs = 7
+    num_inputs = 8
     num_actions = 5
     num_hidden = 128
 
@@ -38,16 +44,29 @@ def main():
     running_reward = 0
     episode_count = 0
 
+    actor_model = tf.keras.models.load_model("./models/actor")
+    l0_weights = actor_model.layers[0].get_weights()
+    l1_weights = actor_model.layers[1].get_weights()
+    l2_weights = actor_model.layers[2].get_weights()
+    l3_weights = actor_model.layers[3].get_weights()
+    l4_weights = actor_model.layers[4].get_weights()
+    
     model = create_model(num_inputs, num_hidden, num_actions)
-    optimizer = keras.optimizers.Adam(learning_rate=0.01)
+    model.layers[0].set_weights(l0_weights)
+    model.layers[1].set_weights(l1_weights)
+    model.layers[2].set_weights(l2_weights)
+    model.layers[3].set_weights(l3_weights)
+    model.layers[4].set_weights(l4_weights)
+
+    optimizer = keras.optimizers.Adam(learning_rate=0.001)
     huber_loss = keras.losses.Huber()
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(True)
+    pong.set_silent(False)
 
     # run until solved
-    while True: 
+    while True:
         state = pong.reset()
 
         episode_reward = 0
@@ -66,10 +85,11 @@ def main():
                 action = rng.choice(num_actions, p=np.squeeze(action_probs))
                 action_probs_history.append(tf.math.log(action_probs[0, action]))
 
-                # time.sleep(3)
+                time.sleep(0.05)
 
                 # Apply the sampled action in our environment
-                state, reward, done = pong.step(action, timestep)
+                state, reward, done, _ = pong.step(action, timestep)
+
                 rewards_history.append(reward)
                 episode_reward += reward
 
@@ -129,7 +149,7 @@ def main():
             template = "running reward: {:.2f} at episode {}"
             print(template.format(running_reward, episode_count))
 
-        if running_reward >= 100 :
+        if running_reward >= 100:
             pong.set_silent(False)
 
         # condition to consider the task solved
