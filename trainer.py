@@ -11,9 +11,9 @@ def create_actor_model(num_inputs, num_hidden, num_actions):
     common = tf.keras.layers.Dense(num_hidden, activation="relu")(common)
     common = tf.keras.layers.Dense(num_hidden, activation="relu")(common)
     action = tf.keras.layers.Dense(num_actions, activation="softmax")(common)
-    opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
-    loss = tf.keras.losses.KLDivergence(reduction="auto", name="kl_divergence")
-    loss = tf.keras.losses.MeanSquaredError(reduction="none")
+    opt = tf.keras.optimizers.Adam(learning_rate=0.01)
+    # loss = tf.keras.losses.KLDivergence(reduction="auto", name="kl_divergence")
+    # loss = tf.keras.losses.MeanSquaredError(reduction="none")
     loss = tf.keras.losses.MeanAbsoluteError(
         reduction="auto", name="mean_absolute_error"
     )
@@ -56,9 +56,7 @@ def main():
                 value = actor_loss_value.numpy()
                 history.append((value, index))
                 print(
-                    "epoch: {} - index: {} - loss: {}".format(
-                        epoch, index, round(value, 3)
-                    )
+                    "epoch: {} - index: {} - loss: {:.3f}".format(epoch, index, value)
                 )
 
     actor.save("./models/actor")

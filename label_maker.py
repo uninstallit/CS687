@@ -8,7 +8,7 @@ def main():
     pong = Pong()
     state = pong.reset()
     pong.set_silent(False)
-    max_steps_per_episode = 1000
+    max_steps_per_episode = 10000
 
     data = []
 
@@ -22,6 +22,9 @@ def main():
 
         row = state + [label]
         data.append(row)
+
+        if timestep % 100 == 0:
+            print("timestep - ", timestep)
 
     with open("pong_data.npy", "wb") as f:
         np.save(f, data)
