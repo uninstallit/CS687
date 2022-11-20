@@ -1,7 +1,7 @@
 import turtle
 import numpy as np
 
-# original game: 
+# original game:
 # https://www.geeksforgeeks.org/create-pong-game-using-python-turtle/
 
 # run faster
@@ -52,32 +52,23 @@ class Pong:
             font=("Courier", 24, "normal"),
         )
 
-        # Midfield
-        self.midfield = turtle.Turtle()
-        self.midfield.speed(1)
-        self.midfield.shape("square")
-        self.midfield.color("black")
-        self.midfield.shapesize(stretch_wid=25, stretch_len=0.2)
-        self.midfield.penup()
-        self.midfield.goto(0, 0)
-
         # Left Penalty
-        self.midfield = turtle.Turtle()
-        self.midfield.speed(1)
-        self.midfield.shape("square")
-        self.midfield.color("black")
-        self.midfield.shapesize(stretch_wid=25, stretch_len=0.2)
-        self.midfield.penup()
-        self.midfield.goto(-250, 0)
+        self.lf_penalty = turtle.Turtle()
+        self.lf_penalty.speed(1)
+        self.lf_penalty.shape("square")
+        self.lf_penalty.color("black")
+        self.lf_penalty.shapesize(stretch_wid=25, stretch_len=0.2)
+        self.lf_penalty.penup()
+        self.lf_penalty.goto(-250, 0)
 
         # Right Penalty
-        self.midfield = turtle.Turtle()
-        self.midfield.speed(1)
-        self.midfield.shape("square")
-        self.midfield.color("black")
-        self.midfield.shapesize(stretch_wid=25, stretch_len=0.2)
-        self.midfield.penup()
-        self.midfield.goto(250, 0)
+        self.rh_penalty = turtle.Turtle()
+        self.rh_penalty.speed(1)
+        self.rh_penalty.shape("square")
+        self.rh_penalty.color("black")
+        self.rh_penalty.shapesize(stretch_wid=25, stretch_len=0.2)
+        self.rh_penalty.penup()
+        self.rh_penalty.goto(250, 0)
 
         self.dy = 5
         self.dx = 5
