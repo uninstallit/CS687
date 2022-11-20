@@ -1,10 +1,8 @@
-# Import required library
 import turtle
 import numpy as np
 
-# import random
-
-# source: https://www.geeksforgeeks.org/create-pong-game-using-python-turtle/
+# original game: 
+# https://www.geeksforgeeks.org/create-pong-game-using-python-turtle/
 
 # run faster
 # https://stackoverflow.com/questions/59119036/how-do-i-make-a-turtle-run-faster
@@ -83,9 +81,10 @@ class Pong:
 
         self.dy = 5
         self.dx = 5
-        self.silent = False
-
         self.label = 4
+        self.silent = False
+        
+        self.hit_ball.dx = 5
 
     def reset(self):
         # reset scores
@@ -116,7 +115,7 @@ class Pong:
         self.hit_ball.penup()
         self.hit_ball.goto(0, 0)
 
-        self.hit_ball.dx = 5
+        # self.hit_ball.dx = 5
         rng = np.random.default_rng()
         self.hit_ball.dy = rng.uniform(low=-5.0, high=5.0)
 
@@ -218,7 +217,7 @@ class Pong:
         if self.hit_ball.xcor() > 500:
             self.hit_ball.goto(0, 0)
             self.left_player += 1
-            # self.hit_ball.dx *= -1
+            self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for losing
             # reward = reward - 10
@@ -226,7 +225,7 @@ class Pong:
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
             self.right_player += 1
-            # self.hit_ball.dx *= -1
+            self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for winning
             reward = reward + 10

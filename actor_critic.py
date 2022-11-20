@@ -5,6 +5,8 @@ from tensorflow.keras import layers
 from gym import Pong
 import time
 
+# original source code
+# https://keras.io/examples/rl/
 
 def create_model(num_inputs, num_hidden, num_actions):
     inputs = layers.Input(shape=(num_inputs,))
