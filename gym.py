@@ -83,7 +83,6 @@ class Pong:
         self.dx = 5
         self.label = 4
         self.silent = False
-        
         self.hit_ball.dx = 5
 
     def reset(self):
@@ -237,6 +236,8 @@ class Pong:
             self.hit_ball.ycor() < self.right_pad.ycor() + 40
             and self.hit_ball.ycor() > self.right_pad.ycor() - 40
         ):
+            # cheat - help to not double hit
+            self.right_pad.setx(rp_xcollision + 100)
             self.hit_ball.setx(rp_xcollision)
             self.hit_ball.dx *= -1
             # reward for hitting the ball

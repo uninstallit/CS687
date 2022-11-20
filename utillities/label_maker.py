@@ -13,7 +13,6 @@ def main():
     data = []
 
     for timestep in range(1, max_steps_per_episode):
-
         # actuon 5: do nothing default
         action = 5
         state, reward, done, label = pong.step(action, timestep)
