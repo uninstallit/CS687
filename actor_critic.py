@@ -8,13 +8,15 @@ import time
 # original source code
 # https://keras.io/examples/rl/
 
+
 def create_model(num_inputs, num_hidden, num_actions):
     inputs = layers.Input(shape=(num_inputs,))
     common = layers.Dense(num_hidden, activation="relu")(inputs)
     common = layers.Dense(num_hidden, activation="relu")(common)
     common = layers.Dense(num_hidden, activation="relu")(common)
     action = layers.Dense(num_actions, activation="softmax")(common)
-    critic = layers.Dense(1, activation="relu")(common)
+    last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
+    critic = layers.Dense(1, activation="tanh", kernel_initializer=last_init)(common)
     model = keras.Model(inputs=inputs, outputs=[action, critic])
     return model
 
@@ -52,7 +54,7 @@ def main():
     l2_weights = actor_model.layers[2].get_weights()
     l3_weights = actor_model.layers[3].get_weights()
     l4_weights = actor_model.layers[4].get_weights()
-    
+
     model = create_model(num_inputs, num_hidden, num_actions)
     model.layers[0].set_weights(l0_weights)
     model.layers[1].set_weights(l1_weights)
@@ -70,24 +72,26 @@ def main():
     # run until solved
     while True:
         state = pong.reset()
-
         episode_reward = 0
+
         with tf.GradientTape() as tape:
             for timestep in range(1, max_steps_per_episode):
                 state = tf.convert_to_tensor(state)
-                state = tf.expand_dims(state, 0)
+                state = tf.expand_dims(state, axis=0)
 
                 # Predict action probabilities and estimated future rewards
                 # from environment state
                 action_probs, critic_value = model(state)
                 critic_value_history.append(critic_value[0, 0])
 
-                # Sample action from action probability distribution
+                # with exploration
                 rng = np.random.default_rng()
                 action = rng.choice(num_actions, p=np.squeeze(action_probs))
                 action_probs_history.append(tf.math.log(action_probs[0, action]))
 
-                time.sleep(0.05)
+                # with no exploration
+                # action = tf.math.argmax(tf.squeeze(action_probs))
+                # action_probs_history.append(tf.math.log(action_probs[0, action]))
 
                 # Apply the sampled action in our environment
                 state, reward, done, _ = pong.step(action, timestep)
@@ -136,7 +140,7 @@ def main():
                 )
 
             # backpropagation
-            loss_value = sum(actor_losses) + sum(critic_losses)
+            loss_value = 0.1 * sum(actor_losses) + sum(critic_losses)
             grads = tape.gradient(loss_value, model.trainable_variables)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
