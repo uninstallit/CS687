@@ -160,9 +160,8 @@ def get_actor(num_states, upper_bound):
     outputs = tf.keras.layers.Dense(1, activation="tanh", kernel_initializer=last_init)(
         out
     )
-    # print("output: ", outputs)
+
     outputs = outputs * upper_bound
-    # print("output: ", outputs)
     model = tf.keras.Model(inputs, outputs)
     return model
 
@@ -256,7 +255,7 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(False)
+    pong.set_silent(True)
 
     # Takes about 4 min to train
     for episode in range(total_episodes):

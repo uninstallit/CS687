@@ -212,7 +212,7 @@ class Pong:
             self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for losing
-            # reward = reward - 10
+            reward = reward - 1
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)

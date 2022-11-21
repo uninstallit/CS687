@@ -15,16 +15,8 @@ def create_model(num_inputs, num_hidden, num_actions):
     common = layers.Dense(num_hidden, activation="relu")(common)
     common = layers.Dense(num_hidden, activation="relu")(common)
     action = layers.Dense(num_actions, activation="softmax")(common)
-    last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
-    critic = layers.Dense(1, activation="tanh", kernel_initializer=last_init)(common)
+    critic = layers.Dense(1, activation="relu")(common)
     model = keras.Model(inputs=inputs, outputs=[action, critic])
-    return model
-
-
-def create_critic_model(num_hidden):
-    inputs = layers.Input(shape=(num_hidden,))
-    critic = layers.Dense(1, activation="relu")(inputs)
-    model = keras.Model(inputs=inputs, outputs=[critic])
     return model
 
 
@@ -67,7 +59,7 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(False)
+    pong.set_silent(True)
 
     # run until solved
     while True:
