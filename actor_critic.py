@@ -140,7 +140,7 @@ def main():
                 )
 
             # backpropagation
-            loss_value = 0.1 * sum(actor_losses) + sum(critic_losses)
+            loss_value = sum(actor_losses) + sum(critic_losses)
             grads = tape.gradient(loss_value, model.trainable_variables)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
@@ -151,9 +151,9 @@ def main():
 
         # log details
         episode_count += 1
-        if episode_count % 10 == 0:
-            template = "running reward: {:.2f} at episode {}"
-            print(template.format(running_reward, episode_count))
+        # if episode_count % 10 == 0:
+        template = "running reward: {:.2f} at episode {}"
+        print(template.format(running_reward, episode_count))
 
         if running_reward >= 100:
             pong.set_silent(False)

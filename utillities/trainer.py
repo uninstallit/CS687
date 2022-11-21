@@ -20,7 +20,8 @@ def main():
     num_inputs = 8
     num_hidden = 128
     num_actions = 5
-    epochs = 25
+    epochs = 200
+    batch_size = 128
     history = []
 
     # create actor model
@@ -29,11 +30,16 @@ def main():
     )
 
     # load train data
-    with open("./data/pong_data.npy", "rb") as f:
-        data = np.load(f)
+    num_files = 3
+    pong_data = np.empty(shape=(9999, 9))
+    for index in range(0, num_files, 1):
+        with open(f"./data/pong_data_{index}.npy", "rb") as f:
+            data = np.load(f)
+            pong_data = np.row_stack([pong_data, data])
+
     dataset = tf.data.Dataset.from_tensor_slices(data)
-    dataset = dataset.shuffle(buffer_size=1024)
-    dataset = dataset.batch(24, drop_remainder=False)
+    dataset = dataset.shuffle(buffer_size=2048)
+    dataset = dataset.batch(batch_size, drop_remainder=True)
 
     for epoch in range(0, epochs, 1):
         tmp_hist = []
@@ -65,8 +71,7 @@ def main():
     actor.save("./models/actor")
 
     # plot data
-    loss = [p[0] for p in history]
-    plt.plot(loss)
+    plt.plot(history)
     plt.title("Loss History")
     plt.ylabel("loss")
     plt.xlabel("epochs")
