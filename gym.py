@@ -269,7 +269,7 @@ class Pong:
         ]
 
         done = False
-        if self.left_player == 1:
+        if self.right_player == 100:
             done = True
             self.reset()
 
