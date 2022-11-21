@@ -67,7 +67,7 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(True)
+    pong.set_silent(False)
 
     # run until solved
     while True:
