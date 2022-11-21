@@ -182,15 +182,17 @@ class Pong:
 
     def step(self, action, timestep):
         # move paddle given action
-        if action == 0:
-            self.pad_b_up()
-        elif action == 1:
-            self.pad_b_down()
-        elif action == 2:
-            self.pad_b_left()
-        elif action == 3:
-            self.pad_b_right()
-        # else do nothing
+        
+        if self.is_paddle_within_bounds():
+            if action >= 0 and action < 0.5:
+                self.pad_b_up()
+            elif action >= 0.5 and action < 1.5:
+                self.pad_b_down()
+            elif action >= 1.5 and action < 2.5:
+                self.pad_b_left()
+            elif action >= 2.5 and action < 3.5:
+                self.pad_b_right()
+            # else do nothing
 
         # step rewward
         reward = 0
@@ -269,7 +271,7 @@ class Pong:
         ]
 
         done = False
-        if self.right_player == 100:
+        if self.left_player == 100 or self.right_player == 100:
             done = True
             self.reset()
 

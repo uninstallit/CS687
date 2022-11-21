@@ -10,7 +10,7 @@ sys.path.append(parent)
 root = os.path.dirname(parent)
 sys.path.append(root)
 
-from gym import Pong
+from pong_gym import Pong
 
 def main():
 

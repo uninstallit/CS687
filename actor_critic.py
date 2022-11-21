@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from gym import Pong
+from pong_gym import Pong
 import time
 
 # original source code
