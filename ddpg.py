@@ -161,7 +161,7 @@ def get_actor(num_states, upper_bound):
         out
     )
 
-    outputs = outputs * upper_bound
+    outputs = tf.math.abs(outputs * upper_bound)
     model = tf.keras.Model(inputs, outputs)
     return model
 

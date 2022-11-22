@@ -182,7 +182,6 @@ class Pong:
 
     def step(self, action, timestep):
         # move paddle given action
-        
         if self.is_paddle_within_bounds():
             if action >= 0 and action < 0.5:
                 self.pad_b_up()
@@ -255,6 +254,9 @@ class Pong:
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
         self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
 
+        if not self.is_paddle_within_bounds():
+            self.right_pad.setx(470)
+
         # runs faster
         if self.silent == False:
             self.sc.update()
@@ -271,7 +273,7 @@ class Pong:
         ]
 
         done = False
-        if self.left_player == 100 or self.right_player == 100:
+        if self.left_player == 10 or self.right_player == 100:
             done = True
             self.reset()
 
