@@ -196,6 +196,9 @@ class Pong:
         # step rewward
         reward = 0
 
+        ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
+        reward = 1.0 / (ydelta + 0.01)
+
         # checking borders
         if self.hit_ball.ycor() > 280:
             self.hit_ball.sety(280)
@@ -280,7 +283,7 @@ class Pong:
         ]
 
         done = False
-        if self.left_player == 10 or self.right_player == 100:
+        if self.left_player == 1 or self.right_player == 100:
             done = True
             self.reset()
 
@@ -295,4 +298,3 @@ class Pong:
         else:
             self.sc.tracer(1)
         self.silent = silent
-        

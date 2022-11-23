@@ -39,20 +39,8 @@ def main():
     rewards_history = []
     running_reward = 0
     episode_count = 0
-
-    actor_model = tf.keras.models.load_model("./models/actor")
-    l0_weights = actor_model.layers[0].get_weights()
-    l1_weights = actor_model.layers[1].get_weights()
-    l2_weights = actor_model.layers[2].get_weights()
-    l3_weights = actor_model.layers[3].get_weights()
-    l4_weights = actor_model.layers[4].get_weights()
-
+    
     model = create_model(num_inputs, num_hidden, num_actions)
-    model.layers[0].set_weights(l0_weights)
-    model.layers[1].set_weights(l1_weights)
-    model.layers[2].set_weights(l2_weights)
-    model.layers[3].set_weights(l3_weights)
-    model.layers[4].set_weights(l4_weights)
 
     optimizer = keras.optimizers.Adam(learning_rate=0.001)
     huber_loss = keras.losses.Huber()
@@ -147,11 +135,11 @@ def main():
         template = "running reward: {:.2f} at episode {}"
         print(template.format(running_reward, episode_count))
 
-        if running_reward >= 10:
+        if running_reward >= 100:
             pong.set_silent(False)
 
         # condition to consider the task solved
-        if running_reward > 100:
+        if running_reward > 1000:
             print("Solved at episode {}!".format(episode_count))
             break
 

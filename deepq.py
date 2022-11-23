@@ -1,6 +1,7 @@
 import numpy as np
 from pong_gym import Pong
 import tensorflow as tf
+
 tf.keras.utils.disable_interactive_logging()
 
 
@@ -181,7 +182,10 @@ def main():
 
         episode_count += 1
 
-        if running_reward > 40:  # Condition to consider the task solved
+        if running_reward >= 1000:
+            pong.set_silent(False)
+
+        if running_reward > 10000:  # Condition to consider the task solved
             print("Solved at episode {}!".format(episode_count))
             break
 
