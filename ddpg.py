@@ -162,6 +162,7 @@ def get_actor(num_states, upper_bound):
     )
 
     outputs = tf.math.abs(outputs * upper_bound)
+    # outputs = outputs * upper_bound
     model = tf.keras.Model(inputs, outputs)
     return model
 
@@ -181,7 +182,7 @@ def get_critic(num_states):
 
     out = tf.keras.layers.Dense(256, activation="relu")(concat)
     out = tf.keras.layers.Dense(256, activation="relu")(out)
-    outputs = tf.keras.layers.Dense(1)(out)
+    outputs = tf.keras.layers.Dense(1, activation="relu")(out)
 
     # Outputs single value for give state-action
     model = tf.keras.Model([state_input, action_input], outputs)
@@ -223,13 +224,13 @@ def main():
     target_critic.set_weights(critic_model.get_weights())
 
     # Learning rate for actor-critic models
-    critic_lr = 0.002
+    critic_lr = 0.005
     actor_lr = 0.001
 
     critic_optimizer = tf.keras.optimizers.Adam(critic_lr)
     actor_optimizer = tf.keras.optimizers.Adam(actor_lr)
 
-    total_episodes = 100
+    total_episodes = 10000
     # Discount factor for future rewards
     gamma = 0.99
     # Used to update target networks
@@ -255,16 +256,13 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(True)
+    pong.set_silent(False)
 
     # Takes about 4 min to train
     for episode in range(total_episodes):
         prev_state = pong.reset()
         episodic_reward = 0
         timestep = 0
-
-        if episode == 95:
-            pong.set_silent(False)
 
         while True:
             tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
@@ -297,6 +295,13 @@ def main():
 
         # Mean of last 40 episodes
         avg_reward = np.mean(ep_reward_list[-40:])
+
+        if avg_reward >= 100:
+            pong.set_silent(False)
+
+        if avg_reward < 100:
+            pong.set_silent(True)
+
         print("Episode * {} * Avg Reward is ==> {}".format(episode, avg_reward))
         avg_reward_list.append(avg_reward)
 

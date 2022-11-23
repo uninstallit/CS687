@@ -211,7 +211,7 @@ class Pong:
             self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for losing
-            reward = reward - 1
+            # reward = reward - 1
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
@@ -255,7 +255,14 @@ class Pong:
         self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
 
         if not self.is_paddle_within_bounds():
-            self.right_pad.setx(470)
+            if self.right_pad.xcor() > 500:
+                self.right_pad.setx(470)
+
+            if self.right_pad.ycor() > 300:
+                self.right_pad.sety(-280)
+
+            if self.right_pad.ycor() < -300:
+                self.right_pad.sety(280)
 
         # runs faster
         if self.silent == False:
@@ -288,3 +295,4 @@ class Pong:
         else:
             self.sc.tracer(1)
         self.silent = silent
+        
