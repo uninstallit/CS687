@@ -87,6 +87,7 @@ def main():
 
                 # Apply the sampled action in our environment
                 state, reward, done, _ = pong.step(action, timestep)
+                #print(reward)
 
                 rewards_history.append(reward)
                 episode_reward += reward
@@ -96,6 +97,7 @@ def main():
 
             # Update running reward to check condition for solving
             running_reward = 0.05 * episode_reward + (1 - 0.05) * running_reward
+            print("episode: ",episode_reward,", running:",running_reward)
 
             # Calculate expected value from rewards
             # - At each timestep what was the total reward received after that timestep
@@ -106,7 +108,7 @@ def main():
             for r in rewards_history[::-1]:
                 discounted_sum = r + gamma * discounted_sum
                 returns.insert(0, discounted_sum)
-
+            
             # normalize
             returns = np.array(returns)
             returns = (returns - np.mean(returns)) / (np.std(returns) + eps)
@@ -117,6 +119,7 @@ def main():
             actor_losses = []
             critic_losses = []
             for log_prob, value, ret in history:
+                #print(log_prob,value,ret)
                 # At this point in history, the critic estimated that we would get a
                 # total reward = `value` in the future. We took an action with log probability
                 # of `log_prob` and ended up recieving a total reward = `ret`.
@@ -134,6 +137,7 @@ def main():
             # backpropagation
             loss_value = sum(actor_losses) + sum(critic_losses)
             grads = tape.gradient(loss_value, model.trainable_variables)
+            print("loss: ",loss_value,", grads: ",grads)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
             # clear the loss and reward history
@@ -147,11 +151,11 @@ def main():
         template = "running reward: {:.2f} at episode {}"
         print(template.format(running_reward, episode_count))
 
-        if running_reward >= 10:
+        if running_reward >= 100:
             pong.set_silent(False)
 
         # condition to consider the task solved
-        if running_reward > 100:
+        if running_reward > 1000:
             print("Solved at episode {}!".format(episode_count))
             break
 

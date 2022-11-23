@@ -182,6 +182,7 @@ class Pong:
 
     def step(self, action, timestep):
         # move paddle given action
+        
         if self.is_paddle_within_bounds():
             if action >= 0 and action < 0.5:
                 self.pad_b_up()
@@ -195,6 +196,11 @@ class Pong:
 
         # step rewward
         reward = 0
+        ydelta = np.abs( self.right_pad.ycor() - self.hit_ball.ycor())
+        if ydelta > 1:
+            reward = -1./ydelta
+        else:
+            reward = 0
 
         # checking borders
         if self.hit_ball.ycor() > 280:
@@ -211,7 +217,10 @@ class Pong:
             self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for losing
-            # reward = reward - 1
+            #reward = reward - 1
+            ydelta = np.abs( self.right_pad.ycor() - self.hit_ball.ycor())
+            #print("inside step.....", ydelta)
+            reward = reward - ydelta
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
@@ -254,16 +263,6 @@ class Pong:
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
         self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
 
-        if not self.is_paddle_within_bounds():
-            if self.right_pad.xcor() > 500:
-                self.right_pad.setx(470)
-
-            if self.right_pad.ycor() > 300:
-                self.right_pad.sety(-280)
-
-            if self.right_pad.ycor() < -300:
-                self.right_pad.sety(280)
-
         # runs faster
         if self.silent == False:
             self.sc.update()
@@ -280,7 +279,7 @@ class Pong:
         ]
 
         done = False
-        if self.left_player == 10 or self.right_player == 100:
+        if self.left_player == 100 or self.right_player == 100:
             done = True
             self.reset()
 
@@ -295,4 +294,3 @@ class Pong:
         else:
             self.sc.tracer(1)
         self.silent = silent
-        
