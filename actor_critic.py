@@ -139,7 +139,7 @@ def main():
             pong.set_silent(False)
             
         if running_reward < 500:
-            pong.set_silent(False)
+            pong.set_silent(True)
 
         # condition to consider the task solved
         if running_reward > 1000:
