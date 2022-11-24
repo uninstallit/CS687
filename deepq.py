@@ -182,10 +182,14 @@ def main():
 
         episode_count += 1
 
-        if running_reward >= 1000:
+        if running_reward >= 500:
             pong.set_silent(False)
 
-        if running_reward > 10000:  # Condition to consider the task solved
+        if running_reward < 500:
+            pong.set_silent(True)
+
+        if running_reward > 1000:  # Condition to consider the task solved
+            model.save_weights("./checkpoints/deepq_checkpoint")
             print("Solved at episode {}!".format(episode_count))
             break
 

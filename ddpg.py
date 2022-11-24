@@ -296,14 +296,20 @@ def main():
         # Mean of last 40 episodes
         avg_reward = np.mean(ep_reward_list[-40:])
 
-        if avg_reward >= 100:
+        if avg_reward >= 500:
             pong.set_silent(False)
 
-        if avg_reward < 100:
+        if avg_reward < 500:
             pong.set_silent(True)
 
         print("Episode * {} * Avg Reward is ==> {}".format(episode, avg_reward))
         avg_reward_list.append(avg_reward)
+
+        if avg_reward > 1000:  # Condition to consider the task solved
+            target_actor.save_weights("./checkpoints/ddpg_actor_checkpoint")
+            target_critic.save_weights("./checkpoints/ddpg_critic_checkpoint")
+            print("Solved at episode {}!".format(episode))
+            break
 
     # Plotting graph
     # Episodes versus Avg. Rewards
