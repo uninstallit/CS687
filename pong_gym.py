@@ -168,30 +168,18 @@ class Pong:
             font=("Courier", 24, "normal"),
         )
 
-    def is_paddle_within_bounds(self):
-
-        if (
-            self.right_pad.ycor() < 280
-            and self.right_pad.ycor() > -280
-            and self.right_pad.xcor() < 500
-            # and self.right_pad.xcor() > -250
-        ):
-            return True
-        else:
-            return False
-
     def step(self, action, timestep):
         # move paddle given action
-        if self.is_paddle_within_bounds():
-            if action >= 0 and action < 0.5:
-                self.pad_b_up()
-            elif action >= 0.5 and action < 1.5:
-                self.pad_b_down()
-            elif action >= 1.5 and action < 2.5:
-                self.pad_b_left()
-            elif action >= 2.5 and action < 3.5:
-                self.pad_b_right()
-            # else do nothing
+
+        if self.right_pad.ycor() <= 270 and action >= 0 and action < 0.5:
+            self.pad_b_up()
+        elif self.right_pad.ycor() >= -270 and action >= 0.5 and action < 1.5:
+            self.pad_b_down()
+        elif self.right_pad.xcor() >= -250 and action >= 1.5 and action < 2.5:
+            self.pad_b_left()
+        elif self.right_pad.xcor() <= 470 and action >= 2.5 and action < 3.5:
+            self.pad_b_right()
+        # else do nothing
 
         # step rewward
         reward = 0
@@ -239,7 +227,11 @@ class Pong:
             reward = reward + 5
 
         lp_xcollision = self.left_pad.xcor() + 30
-        if self.hit_ball.xcor() == lp_xcollision:
+        if (
+            self.hit_ball.xcor() == lp_xcollision
+            # account for ball moving forward
+            or self.hit_ball.xcor() <= lp_xcollision + 10
+        ):
             # move pad to y-ball
             y_ball = self.hit_ball.ycor()
             y_lpad = self.left_pad.ycor()
@@ -257,15 +249,9 @@ class Pong:
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
         self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
 
-        if not self.is_paddle_within_bounds():
-            if self.right_pad.xcor() > 500:
-                self.right_pad.setx(470)
-
-            if self.right_pad.ycor() > 300:
-                self.right_pad.sety(-280)
-
-            if self.right_pad.ycor() < -300:
-                self.right_pad.sety(280)
+        # restore pad after ball collision
+        if self.right_pad.xcor() > 500:
+            self.right_pad.setx(470)
 
         # runs faster
         if self.silent == False:
