@@ -135,11 +135,15 @@ def main():
         template = "running reward: {:.2f} at episode {}"
         print(template.format(running_reward, episode_count))
 
-        if running_reward >= 100:
+        if running_reward >= 500:
+            pong.set_silent(False)
+            
+        if running_reward < 500:
             pong.set_silent(False)
 
         # condition to consider the task solved
         if running_reward > 1000:
+            model.save_weights('./checkpoints/ac_checkpoint')
             print("Solved at episode {}!".format(episode_count))
             break
 

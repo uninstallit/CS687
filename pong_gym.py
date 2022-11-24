@@ -184,8 +184,8 @@ class Pong:
         # step rewward
         reward = 0
 
-        ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
-        reward = 1.0 / (ydelta + 0.01)
+        ydelta = np.square(self.right_pad.ycor() - self.hit_ball.ycor())
+        reward = 1.0 / (ydelta + 0.1)
 
         # checking borders
         if self.hit_ball.ycor() > 280:
@@ -210,7 +210,7 @@ class Pong:
             self.hit_ball.dx *= -1
             self.update_score_board()
             # reward for winning
-            reward = reward + 10
+            reward = reward + 100
             self.silent = False
 
         # pad ball collision
@@ -228,7 +228,7 @@ class Pong:
             self.hit_ball.setx(rp_xcollision)
             self.hit_ball.dx *= -1
             # reward for hitting the ball
-            reward = reward + 5
+            reward = reward + 10
 
         lp_xcollision = self.left_pad.xcor() + 30
         if self.hit_ball.xcor() == lp_xcollision:
