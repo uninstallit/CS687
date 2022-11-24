@@ -218,7 +218,7 @@ class Pong:
         if (
             self.hit_ball.xcor() == rp_xcollision
             # account for ball moving forward
-            or self.hit_ball.xcor() <= lp_xcollision + 10
+            or self.hit_ball.xcor() == rp_xcollision - 5
         ) and (
             self.hit_ball.ycor() < self.right_pad.ycor() + 40
             and self.hit_ball.ycor() > self.right_pad.ycor() - 40
