@@ -215,7 +215,11 @@ class Pong:
 
         # pad ball collision
         rp_xcollision = self.right_pad.xcor() - 30
-        if (self.hit_ball.xcor() == rp_xcollision) and (
+        if (
+            self.hit_ball.xcor() == rp_xcollision
+            # account for ball moving forward
+            or self.hit_ball.xcor() <= lp_xcollision + 10
+        ) and (
             self.hit_ball.ycor() < self.right_pad.ycor() + 40
             and self.hit_ball.ycor() > self.right_pad.ycor() - 40
         ):
@@ -227,11 +231,7 @@ class Pong:
             reward = reward + 5
 
         lp_xcollision = self.left_pad.xcor() + 30
-        if (
-            self.hit_ball.xcor() == lp_xcollision
-            # account for ball moving forward
-            or self.hit_ball.xcor() <= lp_xcollision + 10
-        ):
+        if self.hit_ball.xcor() == lp_xcollision:
             # move pad to y-ball
             y_ball = self.hit_ball.ycor()
             y_lpad = self.left_pad.ycor()
