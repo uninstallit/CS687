@@ -1,6 +1,6 @@
 from pong import Pong
-from ddpg_test import DDPG
-from deepq_test import DeepQ
+from ddpg import DDPG
+from deepq import DeepQ
 
 
 def main():

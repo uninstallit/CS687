@@ -1,5 +1,5 @@
 from pong import Pong
-from ddpg_test import DDPG
+from ddpg import DDPG
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
     upper_bound = num_actions - 1
 
     episode = 0
-    max_episode = 100000
+    max_episode = 1000
     max_steps_per_episode = 10000
 
     # Create the environment

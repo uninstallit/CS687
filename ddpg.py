@@ -171,7 +171,7 @@ class DDPG:
         # Discount factor for future rewards
         self.gamma = 0.99
         # Used to update target networks
-        self.tau = 0.05
+        self.tau = 0.005
 
         self.buffer = Buffer(
             num_states=self.num_states,

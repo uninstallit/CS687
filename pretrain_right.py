@@ -1,5 +1,5 @@
 from pong import Pong
-from deepq_test import DeepQ
+from deepq import DeepQ
 
 
 def main():
@@ -8,7 +8,7 @@ def main():
     num_actions = 5
 
     episode = 0
-    max_episode = 100000
+    max_episode = 1000
     max_steps_per_episode = 10000
     frame_count = 0
 
@@ -44,7 +44,7 @@ def main():
         episode += 1
         rp_avg_reward = deepq.update_history(rp_episode_reward)
 
-        # checkpoints
+        # checkpointsh  
         if episode % 1000 == 0:
             # checkpoints
             deepq.model.save_weights("./checkpoints/deepq_model.h5")
