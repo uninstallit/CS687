@@ -1,6 +1,5 @@
-import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
+import tensorflow as tf
 from pong import Pong
 
 
@@ -162,8 +161,8 @@ class DDPG:
         self.target_critic.set_weights(self.critic_model.get_weights())
 
         # Learning rate for actor-critic models
-        self.critic_lr = 0.0002
-        self.actor_lr = 0.0001
+        self.critic_lr = 0.002
+        self.actor_lr = 0.001
 
         self.critic_optimizer = tf.keras.optimizers.Adam(self.critic_lr)
         self.actor_optimizer = tf.keras.optimizers.Adam(self.actor_lr)
