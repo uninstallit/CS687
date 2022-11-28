@@ -4,12 +4,6 @@ import numpy as np
 # original game:
 # https://www.geeksforgeeks.org/create-pong-game-using-python-turtle/
 
-# run faster
-# https://stackoverflow.com/questions/59119036/how-do-i-make-a-turtle-run-faster
-
-# simulate key presses
-# https://www.youtube.com/watch?v=nQTWe5PYDwM&t=107s&ab_channel=Pydemy
-
 
 class Pong:
     def __init__(self):
@@ -72,7 +66,8 @@ class Pong:
 
         self.dy = 5
         self.dx = 5
-        self.label = 4
+        self.lp_label = 4
+        self.rp_label = 4
         self.silent = False
         self.hit_ball.dx = 5
 
@@ -123,16 +118,29 @@ class Pong:
             self.hit_ball.dy,
         ]
 
-    # functions to move pad vertically
     def pad_a_up(self):
+        self.lp_label = 0
         y = self.left_pad.ycor()
         y += self.dy
         self.left_pad.sety(y)
 
     def pad_a_down(self):
+        self.lp_label = 1
         y = self.left_pad.ycor()
         y -= self.dy
         self.left_pad.sety(y)
+
+    def pad_a_left(self):
+        self.lp_label = 2
+        x = self.left_pad.xcor()
+        x -= self.dx
+        self.left_pad.setx(x)
+
+    def pad_a_right(self):
+        self.lp_label = 3
+        x = self.left_pad.xcor()
+        x += self.dx
+        self.left_pad.setx(x)
 
     def pad_b_up(self):
         self.label = 0
@@ -168,9 +176,20 @@ class Pong:
             font=("Courier", 24, "normal"),
         )
 
-    def step(self, action, timestep):
-        # move paddle given action
+    def left_step(self, action):
+        # move right paddle given action
+        if self.left_pad.ycor() <= 270 and action >= 0 and action < 0.5:
+            self.pad_a_up()
+        elif self.left_pad.ycor() >= -270 and action >= 0.5 and action < 1.5:
+            self.pad_a_down()
+        elif self.left_pad.xcor() >= -470 and action >= 1.5 and action < 2.5:
+            self.pad_a_left()
+        elif self.left_pad.xcor() <= 250 and action >= 2.5 and action < 3.5:
+            self.pad_a_right()
+        # else do nothing
 
+    def right_step(self, action):
+        # move paddle given action
         if self.right_pad.ycor() <= 270 and action >= 0 and action < 0.5:
             self.pad_b_up()
         elif self.right_pad.ycor() >= -270 and action >= 0.5 and action < 1.5:
@@ -181,11 +200,22 @@ class Pong:
             self.pad_b_right()
         # else do nothing
 
-        # step rewward
-        reward = 0
+    def step(self, action, auto_left=False, auto_right=False):
+        lp_action = action[0]
+        rp_action = action[1]
 
-        ydelta = np.square(self.right_pad.ycor() - self.hit_ball.ycor())
-        reward = 1.0 / (ydelta + 0.1)
+        self.left_step(lp_action)
+        self.right_step(rp_action)
+
+        # step rewward
+        lp_reward = 0
+        rp_reward = 0
+
+        ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
+        lp_reward = 1.0 / (ydelta + 0.01)
+
+        ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
+        rp_reward = 1.0 / (ydelta + 0.01)
 
         # checking borders
         if self.hit_ball.ycor() > 280:
@@ -201,56 +231,71 @@ class Pong:
             self.left_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            # reward for losing
-            # reward = reward - 1
+            lp_reward = lp_reward + 100
+            rp_reward = rp_reward - 100
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
             self.right_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            # reward for winning
-            reward = reward + 100
-            self.silent = False
+            lp_reward = lp_reward - 100
+            rp_reward = rp_reward + 100
 
-        # pad ball collision
-        rp_xcollision = self.right_pad.xcor() - 30
-        if (
-            self.hit_ball.xcor() == rp_xcollision
-            # account for ball moving forward
-            or self.hit_ball.xcor() == rp_xcollision - 5
-        ) and (
-            self.hit_ball.ycor() < self.right_pad.ycor() + 40
-            and self.hit_ball.ycor() > self.right_pad.ycor() - 40
-        ):
-            # cheat - help to not double hit
-            self.right_pad.setx(rp_xcollision + 100)
-            self.hit_ball.setx(rp_xcollision)
-            self.hit_ball.dx *= -1
-            # reward for hitting the ball
-            reward = reward + 10
-
-        lp_xcollision = self.left_pad.xcor() + 30
-        if self.hit_ball.xcor() == lp_xcollision:
+        # left pad ball collision
+        lp_x_collision = self.left_pad.xcor() + 30
+        if auto_left is True and self.hit_ball.xcor() == lp_x_collision:
             # move pad to y-ball
             y_ball = self.hit_ball.ycor()
             y_lpad = self.left_pad.ycor()
             y_delta = y_ball - y_lpad
-            if y_delta >= 0:
-                self.left_pad.sety(y_lpad + y_delta)
-            else:
-                self.left_pad.sety(y_lpad + y_delta)
-
-            # hit balls
-            self.hit_ball.setx(lp_xcollision)
+            self.left_pad.sety(y_lpad + y_delta)
+            # hit ball
+            self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
+        elif (self.hit_ball.xcor() == lp_x_collision) and (
+            self.hit_ball.ycor() <= self.left_pad.ycor() + 40
+            and self.hit_ball.ycor() >= self.left_pad.ycor() - 40
+        ):
+            # cheat - help to not double hit
+            self.left_pad.setx(lp_x_collision - 100)
+            self.hit_ball.setx(lp_x_collision)
+            self.hit_ball.dx *= -1
+            # reward for hitting the ball
+            lp_reward = lp_reward + 50
+
+        # right pad ball collision
+        rp_x_collision = self.right_pad.xcor() - 30
+        if auto_right is True and self.hit_ball.xcor() == rp_x_collision:
+            # move pad to y-ball
+            y_ball = self.hit_ball.ycor()
+            y_rpad = self.right_pad.ycor()
+            y_delta = y_ball - y_rpad
+            self.right_pad.sety(y_rpad + y_delta)
+            # hit ball
+            self.hit_ball.setx(rp_x_collision)
+            self.hit_ball.dx *= -1
+        elif (self.hit_ball.xcor() == rp_x_collision) and (
+            self.hit_ball.ycor() <= self.right_pad.ycor() + 40
+            and self.hit_ball.ycor() >= self.right_pad.ycor() - 40
+        ):
+            # cheat - help to not double hit
+            self.right_pad.setx(rp_x_collision + 100)
+            self.hit_ball.setx(rp_x_collision)
+            self.hit_ball.dx *= -1
+            # reward for hitting the ball
+            rp_reward = rp_reward + 50
 
         # hit ball
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
         self.hit_ball.sety(self.hit_ball.ycor() + self.hit_ball.dy)
 
+        # restore left pad after ball collision
+        if self.left_pad.xcor() <= -500:
+            self.left_pad.setx(-470)
+
         # restore pad after ball collision
-        if self.right_pad.xcor() > 500:
+        if self.right_pad.xcor() >= 500:
             self.right_pad.setx(470)
 
         # runs faster
@@ -269,11 +314,19 @@ class Pong:
         ]
 
         done = False
-        if self.left_player == 1 or self.right_player == 100:
+        if auto_left is True and self.left_player == 1:
+            done = True
+            self.reset()
+        elif auto_right is True and self.right_player == 1:
+            done = True
+            self.reset()
+        elif self.left_player == 10 or self.right_player == 10:
             done = True
             self.reset()
 
-        return state, reward, done, self.label
+        rewards = (lp_reward, rp_reward)
+        label = (self.lp_label, self.rp_label)
+        return state, rewards, done, label
 
     def render(self):
         self.sc.update()
