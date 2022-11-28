@@ -15,7 +15,7 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(False)
+    pong.set_silent(True)
 
     # left player
     ddpg = DDPG(num_inputs, lower_bound, upper_bound)

@@ -193,7 +193,7 @@ class DDPG:
 
     def get_actor(self):
         # Initialize weights between -3e-3 and 3-e3
-        last_init = tf.random_uniform_initializer(minval=-0.03, maxval=0.03)
+        last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
 
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
         out = tf.keras.layers.Dense(128, activation="relu")(inputs)
