@@ -42,7 +42,7 @@ class Buffer:
         actor_optimizer,
         critic_optimizer,
         gamma,
-        buffer_capacity=50000,
+        buffer_capacity=1000000,
         batch_size=32,
     ):
         # Number of "experiences" to store at max
@@ -96,7 +96,6 @@ class Buffer:
         next_state_batch,
     ):
         # Training and updating Actor & Critic networks.
-        # See Pseudo Code.
         with tf.GradientTape() as tape:
             target_actions = self.target_actor(next_state_batch, training=True)
             y = reward_batch + self.gamma * self.target_critic(
@@ -139,7 +138,16 @@ class Buffer:
 
 
 class DDPG:
-    def __init__(self, num_states, lower_bound, upper_bound):
+    def __init__(
+        self,
+        num_states,
+        lower_bound,
+        upper_bound,
+        actor_checkpoint="",
+        critic_checkpoint="",
+        target_actor_checkpoint="",
+        target_critic_checkpoint="",
+    ):
         self.num_states = num_states
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
@@ -151,26 +159,36 @@ class DDPG:
         )
 
         self.actor_model = self.get_actor()
+        if actor_checkpoint != "":
+            self.actor_model.load_weights(actor_checkpoint)
+
         self.critic_model = self.get_critic()
+        if critic_checkpoint != "":
+            self.critic_model.load_weights(critic_checkpoint)
 
         self.target_actor = self.get_actor()
+        if target_actor_checkpoint != "":
+            self.target_actor.load_weights(target_actor_checkpoint)
+
         self.target_critic = self.get_critic()
+        if target_critic_checkpoint != "":
+            self.target_critic.load_weights(target_critic_checkpoint)
 
         # Making the weights equal initially
         self.target_actor.set_weights(self.actor_model.get_weights())
         self.target_critic.set_weights(self.critic_model.get_weights())
 
         # Learning rate for actor-critic models
-        self.critic_lr = 0.002
-        self.actor_lr = 0.001
+        self.critic_lr = 0.02
+        self.actor_lr = 0.01
 
-        self.critic_optimizer = tf.keras.optimizers.Adam(self.critic_lr)
-        self.actor_optimizer = tf.keras.optimizers.Adam(self.actor_lr)
+        self.critic_optimizer = tf.keras.optimizers.Adam(self.critic_lr, clipnorm=1.0)
+        self.actor_optimizer = tf.keras.optimizers.Adam(self.actor_lr, clipnorm=1.0)
 
         # Discount factor for future rewards
         self.gamma = 0.99
         # Used to update target networks
-        self.tau = 0.005
+        self.tau = 0.001
 
         self.buffer = Buffer(
             num_states=self.num_states,
@@ -195,9 +213,9 @@ class DDPG:
         last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
 
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
-        out = tf.keras.layers.Dense(128, activation="relu")(inputs)
-        out = tf.keras.layers.Dense(128, activation="relu")(out)
-        out = tf.keras.layers.Dense(128, activation="relu")(out)
+        out = tf.keras.layers.Dense(128, activation="tanh")(inputs)
+        out = tf.keras.layers.Dense(128, activation="tanh")(out)
+        out = tf.keras.layers.Dense(128, activation="tanh")(out)
         outputs = tf.keras.layers.Dense(
             1, activation="tanh", kernel_initializer=last_init
         )(out)

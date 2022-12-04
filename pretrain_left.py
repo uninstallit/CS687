@@ -10,7 +10,7 @@ def main():
     upper_bound = num_actions - 1
 
     episode = 0
-    max_episode = 1000
+    max_episode = 10000
     max_steps_per_episode = 10000
 
     # Create the environment
@@ -18,7 +18,15 @@ def main():
     pong.set_silent(True)
 
     # left player
-    ddpg = DDPG(num_inputs, lower_bound, upper_bound)
+    ddpg = DDPG(
+        num_inputs,
+        lower_bound,
+        upper_bound,
+        actor_checkpoint="./checkpoints\ddpg_actor_model.h5",
+        critic_checkpoint="./checkpoints\ddpg_critic_model.h5",
+        target_actor_checkpoint="./checkpoints\ddpg_target_actor.h5",
+        target_critic_checkpoint="./checkpoints\ddpg_target_critic.h5",
+    )
 
     while True:
         prev_state = pong.reset()

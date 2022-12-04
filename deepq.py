@@ -33,7 +33,7 @@ class DeepQ:
             self.model_target.load_weights(target_checkpoint)
         # In the Deepmind paper they use RMSProp however then Adam optimizer
         # improves training time
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0025, clipnorm=1.0)
 
         # Experience replay buffers
         self.action_history = []
@@ -51,7 +51,7 @@ class DeepQ:
         self.epsilon_greedy_frames = 1000000.0
         # Maximum replay length
         # Note: The Deepmind paper suggests 1000000 however this causes memory issues
-        self.max_memory_length = 50000
+        self.max_memory_length = 1000000
         # Train the model after 4 actions
         self.update_after_actions = 4
         # How often to update the target network
