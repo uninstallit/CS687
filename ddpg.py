@@ -153,7 +153,7 @@ class DDPG:
         self.upper_bound = upper_bound
 
         # hyperparams
-        self.std_dev = 0.2
+        self.std_dev = 0.5
         self.ou_noise = OUActionNoise(
             mean=np.zeros(1), std_deviation=float(self.std_dev) * np.ones(1)
         )
@@ -179,8 +179,8 @@ class DDPG:
         self.target_critic.set_weights(self.critic_model.get_weights())
 
         # Learning rate for actor-critic models
-        self.critic_lr = 0.02
-        self.actor_lr = 0.01
+        self.critic_lr = 0.002
+        self.actor_lr = 0.001
 
         self.critic_optimizer = tf.keras.optimizers.Adam(self.critic_lr, clipnorm=1.0)
         self.actor_optimizer = tf.keras.optimizers.Adam(self.actor_lr, clipnorm=1.0)
@@ -199,8 +199,8 @@ class DDPG:
             actor_optimizer=self.actor_optimizer,
             critic_optimizer=self.critic_optimizer,
             gamma=self.gamma,
-            buffer_capacity=50000,
-            batch_size=64,
+            buffer_capacity=1000000,
+            batch_size=32,
         )
 
         # To store reward history of each episode
@@ -213,9 +213,9 @@ class DDPG:
         last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
 
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
-        out = tf.keras.layers.Dense(128, activation="tanh")(inputs)
-        out = tf.keras.layers.Dense(128, activation="tanh")(out)
-        out = tf.keras.layers.Dense(128, activation="tanh")(out)
+        out = tf.keras.layers.Dense(128, activation="relu")(inputs)
+        out = tf.keras.layers.Dense(128, activation="relu")(out)
+        out = tf.keras.layers.Dense(128, activation="relu")(out)
         outputs = tf.keras.layers.Dense(
             1, activation="tanh", kernel_initializer=last_init
         )(out)
@@ -254,8 +254,11 @@ class DDPG:
     # Based on rate `tau`, which is much less than one.
     @tf.function
     def update_target(self, target_weights, weights, tau):
+        result = []
         for (a, b) in zip(target_weights, weights):
-            a.assign(b * tau + a * (1 - tau))
+            a = b * tau + a * (1 - tau)
+            result.append(a)
+        return result
 
     def next_action(self, prev_state):
         tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
@@ -265,12 +268,15 @@ class DDPG:
     def learn(self, prev_state, state, action, reward):
         self.buffer.record((prev_state, action, reward, state))
         self.buffer.learn()
-        self.update_target(
+        result = self.update_target(
             self.target_actor.variables, self.actor_model.variables, self.tau
         )
-        self.update_target(
+        self.target_actor.set_weights(result)
+        
+        result = self.update_target(
             self.target_critic.variables, self.critic_model.variables, self.tau
         )
+        self.target_critic.set_weights(result)
 
     def update_history(self, episodic_reward):
         self.ep_reward_list.append(episodic_reward)
@@ -278,51 +284,3 @@ class DDPG:
         avg_reward = np.mean(self.ep_reward_list[-40:])
         self.avg_reward_list.append(avg_reward)
         return avg_reward
-
-
-def main():
-    # model parameters
-    num_inputs = 8
-    num_actions = 5
-    lower_bound = 0
-    upper_bound = num_actions - 1
-
-    episode = 0
-    max_steps_per_episode = 10000
-
-    # Create the environment
-    pong = Pong()
-    pong.set_silent(True)
-
-    ddpg = DDPG(num_inputs, lower_bound, upper_bound)
-
-    while True:
-        prev_state = pong.reset()
-        lp_episode_reward = 0
-
-        for timestep in range(1, max_steps_per_episode):
-
-            # left player
-            lp_action = ddpg.next_action(prev_state)
-
-            # pong arena
-            actions = (lp_action, 999)
-            state, rewards, done, _ = pong.step(actions, auto_right=True)
-            (lp_reward, rp_reward) = rewards
-
-            # left player
-            lp_episode_reward += lp_reward
-            ddpg.learn(prev_state, lp_action, lp_reward, state)
-
-            if done:
-                break
-
-            prev_state = state
-
-        episode += 1
-        ddpg_avg_reward = ddpg.update_history(lp_episode_reward)
-        print("Episode * {} * Avg Reward is ==> {}".format(episode, ddpg_avg_reward))
-
-
-if __name__ == "__main__":
-    main()

@@ -37,6 +37,7 @@ def main():
             deepq.learn(prev_state, state, rp_action, rp_reward, frame_count, done)
 
             prev_state = state
+            frame_count = frame_count + 1
 
             if done:
                 break
@@ -45,7 +46,7 @@ def main():
         rp_avg_reward = deepq.update_history(rp_episode_reward)
 
         # checkpointsh  
-        if episode % 1000 == 0:
+        if episode % 10 == 0:
             # checkpoints
             deepq.model.save_weights("./checkpoints/deepq_model.h5")
             deepq.model_target.save_weights("./checkpoints/deepq_model_target.h5")
