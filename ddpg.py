@@ -118,8 +118,8 @@ class Buffer:
             actor_loss = -tf.math.reduce_mean(critic_value)
 
         actor_grad = tape.gradient(actor_loss, self.actor_model.trainable_variables)
-        if actor_grad[0][0][0] == 0:
-            tf.print("grad are fading: ", actor_grad[0][0][0])
+        # if actor_grad[0][0][0] == 0:
+        #     tf.print("grad are fading: ", actor_grad[0][0][0])
 
         self.actor_optimizer.apply_gradients(
             zip(actor_grad, self.actor_model.trainable_variables)

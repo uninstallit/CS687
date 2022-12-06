@@ -319,10 +319,10 @@ class Pong:
         ]
 
         done = False
-        if auto_left is True and self.left_player == 10:
+        if auto_left is True and self.left_player == 1:
             done = True
             self.reset()
-        elif auto_right is True and self.right_player == 10:
+        elif auto_right is True and self.right_player == 1:
             done = True
             self.reset()
         elif self.left_player == 10 or self.right_player == 10:
