@@ -118,6 +118,9 @@ class Buffer:
             actor_loss = -tf.math.reduce_mean(critic_value)
 
         actor_grad = tape.gradient(actor_loss, self.actor_model.trainable_variables)
+        if actor_grad[0][0][0] == 0:
+            tf.print("grad are fading: ", actor_grad[0][0][0])
+
         self.actor_optimizer.apply_gradients(
             zip(actor_grad, self.actor_model.trainable_variables)
         )
@@ -179,8 +182,8 @@ class DDPG:
         self.target_critic.set_weights(self.critic_model.get_weights())
 
         # Learning rate for actor-critic models
-        self.critic_lr = 0.002
-        self.actor_lr = 0.001
+        self.critic_lr = 0.0002
+        self.actor_lr = 0.0001
 
         self.critic_optimizer = tf.keras.optimizers.Adam(self.critic_lr, clipnorm=1.0)
         self.actor_optimizer = tf.keras.optimizers.Adam(self.actor_lr, clipnorm=1.0)
@@ -210,12 +213,12 @@ class DDPG:
 
     def get_actor(self):
         # Initialize weights between -3e-3 and 3-e3
-        last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
+        last_init = tf.random_uniform_initializer(minval=-0.0003, maxval=0.0003)
 
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
         out = tf.keras.layers.Dense(128, activation="relu")(inputs)
         out = tf.keras.layers.Dense(128, activation="relu")(out)
-        out = tf.keras.layers.Dense(128, activation="relu")(out)
+        out = tf.keras.layers.Dense(128, activation="tanh")(out)
         outputs = tf.keras.layers.Dense(
             1, activation="tanh", kernel_initializer=last_init
         )(out)
@@ -247,18 +250,15 @@ class DDPG:
         # Adding noise to action
         sampled_actions = sampled_actions.numpy() + noise
         # We make sure action is within bounds
-        legal_action = np.clip(sampled_actions, self.lower_bound, self.upper_bound)
-        return np.squeeze(legal_action)
+        # legal_action = np.clip(sampled_actions, self.lower_bound, self.upper_bound)
+        return np.squeeze(sampled_actions)
 
     # This update target parameters slowly
     # Based on rate `tau`, which is much less than one.
     @tf.function
     def update_target(self, target_weights, weights, tau):
-        result = []
         for (a, b) in zip(target_weights, weights):
-            a = b * tau + a * (1 - tau)
-            result.append(a)
-        return result
+            a.assign(b * tau + a * (1.0 - tau))
 
     def next_action(self, prev_state):
         tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
@@ -268,15 +268,16 @@ class DDPG:
     def learn(self, prev_state, state, action, reward):
         self.buffer.record((prev_state, action, reward, state))
         self.buffer.learn()
-        result = self.update_target(
+
+        self.update_target(
             self.target_actor.variables, self.actor_model.variables, self.tau
         )
-        self.target_actor.set_weights(result)
-        
-        result = self.update_target(
+        # self.target_actor.set_weights(result)
+
+        self.update_target(
             self.target_critic.variables, self.critic_model.variables, self.tau
         )
-        self.target_critic.set_weights(result)
+        # self.target_critic.set_weights(result)
 
     def update_history(self, episodic_reward):
         self.ep_reward_list.append(episodic_reward)
