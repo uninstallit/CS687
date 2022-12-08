@@ -118,8 +118,8 @@ class Buffer:
             actor_loss = -tf.math.reduce_mean(critic_value)
 
         actor_grad = tape.gradient(actor_loss, self.actor_model.trainable_variables)
-        # if actor_grad[0][0][0] == 0:
-        #     tf.print("grad are fading: ", actor_grad[0][0][0])
+        if actor_grad[0][0][0] == 0:
+            tf.print("grad are fading: ", actor_grad[0][0][0])
 
         self.actor_optimizer.apply_gradients(
             zip(actor_grad, self.actor_model.trainable_variables)
@@ -156,7 +156,7 @@ class DDPG:
         self.upper_bound = upper_bound
 
         # hyperparams
-        self.std_dev = 0.5
+        self.std_dev = 0.2
         self.ou_noise = OUActionNoise(
             mean=np.zeros(1), std_deviation=float(self.std_dev) * np.ones(1)
         )
@@ -213,16 +213,26 @@ class DDPG:
 
     def get_actor(self):
         # Initialize weights between -3e-3 and 3-e3
-        last_init = tf.random_uniform_initializer(minval=-0.0003, maxval=0.0003)
+        last_init = tf.random_uniform_initializer(minval=-0.003, maxval=0.003)
 
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
-        out = tf.keras.layers.Dense(128, activation="relu")(inputs)
-        out = tf.keras.layers.Dense(128, activation="relu")(out)
+        out = tf.keras.layers.Dense(
+            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
+        )(inputs)
+        out = tf.keras.layers.Dense(
+            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
+        )(out)
+        out = tf.keras.layers.Dense(
+            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
+        )(out)
+        out = tf.keras.layers.Dense(
+            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
+        )(out)
         out = tf.keras.layers.Dense(128, activation="tanh")(out)
         outputs = tf.keras.layers.Dense(
             1, activation="tanh", kernel_initializer=last_init
         )(out)
-        outputs = tf.math.abs(outputs * self.upper_bound)
+        # outputs = tf.math.abs(outputs * self.upper_bound)
         # outputs = outputs * (self.upper_bound / 2.0) + (self.upper_bound / 2.0)
         actor = tf.keras.Model(inputs, outputs)
         return actor

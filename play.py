@@ -17,17 +17,17 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(True)
+    pong.set_silent(False)
 
     # left player
     ddpg = DDPG(
         num_inputs,
         lower_bound,
         upper_bound,
-        # actor_model_checkpoint="./checkpoints/ddpg_actor_model.h5",
-        # critic_model_checkpoint="./checkpoints/ddpg_critic_model.h5",
-        # target_actor_checkpoint="./checkpoints/ddpg_target_actor.h5",
-        # target_critic_checkpoint="./checkpoints/ddpg_target_critic.h5",
+        actor_model_checkpoint="./checkpoints/ddpg_actor_model.h5",
+        critic_model_checkpoint="./checkpoints/ddpg_critic_model.h5",
+        target_actor_checkpoint="./checkpoints/ddpg_target_actor.h5",
+        target_critic_checkpoint="./checkpoints/ddpg_target_critic.h5",
     )
 
     # right player

@@ -15,7 +15,7 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(True)
+    pong.set_silent(False)
 
     # left player
     ddpg = DDPG(
@@ -62,7 +62,7 @@ def main():
             ddpg.target_critic.save_weights("./checkpoints/ddpg_target_critic.h5")
 
         print("Episode * {} * Left Avg Reward ==> {}".format(episode, lp_avg_reward))
-
+          
         if episode == max_episode:
             break
 

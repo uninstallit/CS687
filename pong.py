@@ -179,15 +179,28 @@ class Pong:
     def left_step(self, action):
         # print("action: ", action)
         # move right paddle given action
-        if self.left_pad.ycor() <= 270 and action >= 0 and action < 0.5:
+        if self.left_pad.ycor() <= 270 and action >= -1 and action < -0.5:
             self.pad_a_up()
-        elif self.left_pad.ycor() >= -270 and action >= 0.5 and action < 1.5:
+        elif self.left_pad.ycor() >= -270 and action >= -0.5 and action < 0.0:
             self.pad_a_down()
-        elif self.left_pad.xcor() >= -470 and action >= 1.5 and action < 2.5:
+        elif self.left_pad.xcor() >= -470 and action >= 0.0 and action < 0.5:
             self.pad_a_left()
-        elif self.left_pad.xcor() <= 250 and action >= 2.5 and action < 3.5:
+        elif self.left_pad.xcor() <= 250 and action >= 0.5 and action < 1.0:
             self.pad_a_right()
         # else do nothing
+
+    # def left_step(self, action):
+    #     # print("action: ", action)
+    #     # move right paddle given action
+    #     if self.left_pad.ycor() <= 270 and action >= 0 and action < 0.5:
+    #         self.pad_a_up()
+    #     elif self.left_pad.ycor() >= -270 and action >= 0.5 and action < 1.5:
+    #         self.pad_a_down()
+    #     elif self.left_pad.xcor() >= -470 and action >= 1.5 and action < 2.5:
+    #         self.pad_a_left()
+    #     elif self.left_pad.xcor() <= 250 and action >= 2.5 and action < 3.5:
+    #         self.pad_a_right()
+    #     # else do nothing
 
     def right_step(self, action):
         # move paddle given action
@@ -215,12 +228,10 @@ class Pong:
         delta_max = 300
 
         ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
-        lp_reward = np.square(1.0 - (ydelta / delta_max)) - 0.5
+        lp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
 
         ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
-        rp_reward = np.square(1.0 - (ydelta / delta_max)) - 0.5
-        
-        # print("lp reward: ", lp_reward)
+        rp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
 
         # checking borders
         if self.hit_ball.ycor() > 280:
@@ -236,16 +247,16 @@ class Pong:
             self.left_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            lp_reward = lp_reward + 10
-            rp_reward = rp_reward - 10
+            lp_reward = lp_reward + 1000
+            rp_reward = rp_reward - 1000
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
             self.right_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            lp_reward = lp_reward - 10
-            rp_reward = rp_reward + 10
+            lp_reward = lp_reward - 1000
+            rp_reward = rp_reward + 1000
 
         # left pad ball collision
         lp_x_collision = self.left_pad.xcor() + 30
@@ -259,8 +270,8 @@ class Pong:
             self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
         elif (self.hit_ball.xcor() == lp_x_collision) and (
-            self.hit_ball.ycor() <= self.left_pad.ycor() + 40
-            and self.hit_ball.ycor() >= self.left_pad.ycor() - 40
+            self.hit_ball.ycor() <= self.left_pad.ycor() + 60
+            and self.hit_ball.ycor() >= self.left_pad.ycor() - 60
         ):
             # cheat - help to not double hit
             self.left_pad.setx(lp_x_collision - 100)
@@ -281,8 +292,8 @@ class Pong:
             self.hit_ball.setx(rp_x_collision)
             self.hit_ball.dx *= -1
         elif (self.hit_ball.xcor() == rp_x_collision) and (
-            self.hit_ball.ycor() <= self.right_pad.ycor() + 40
-            and self.hit_ball.ycor() >= self.right_pad.ycor() - 40
+            self.hit_ball.ycor() <= self.right_pad.ycor() + 60
+            and self.hit_ball.ycor() >= self.right_pad.ycor() - 60
         ):
             # cheat - help to not double hit
             self.right_pad.setx(rp_x_collision + 100)
@@ -325,7 +336,9 @@ class Pong:
         elif auto_right is True and self.right_player == 1:
             done = True
             self.reset()
-        elif self.left_player == 10 or self.right_player == 10:
+        elif (auto_right is False and auto_left is False) and (
+            self.left_player == 1 or self.right_player == 1
+        ):
             done = True
             self.reset()
 
