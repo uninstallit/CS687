@@ -1,5 +1,6 @@
 from pong import Pong
 from ddpg import DDPG
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -10,8 +11,11 @@ def main():
     upper_bound = num_actions - 1
 
     episode = 0
-    max_episode = 10000
+    max_episode = 10
     max_steps_per_episode = 10000
+    
+    # history
+    avg_reward_list = []
 
     # Create the environment
     pong = Pong()
@@ -62,10 +66,15 @@ def main():
             ddpg.target_critic.save_weights("./checkpoints/ddpg_target_critic.h5")
 
         print("Episode * {} * Left Avg Reward ==> {}".format(episode, lp_avg_reward))
-          
+        avg_reward_list.append(lp_avg_reward)
+        
         if episode == max_episode:
             break
 
+    plt.plot(avg_reward_list)
+    plt.xlabel("Episode")
+    plt.ylabel("Avg. Epsiodic Reward")
+    plt.show()
 
 if __name__ == "__main__":
     main()
