@@ -61,9 +61,13 @@ class DeepQ:
 
     def create_q_model(self):
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
-        common = tf.keras.layers.Dense(128, activation="relu")(inputs)
-        common = tf.keras.layers.Dense(128, activation="relu")(common)
-        common = tf.keras.layers.Dense(128, activation="relu")(common)
+        common = tf.keras.layers.Dense(
+            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
+        )(inputs)
+        common = tf.keras.layers.Dense(
+            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
+        )(common)
+        common = tf.keras.layers.Dense(128, activation="tanh")(common)
         action = tf.keras.layers.Dense(self.num_actions, activation="linear")(common)
         model = tf.keras.Model(inputs=inputs, outputs=action)
         return model
@@ -106,7 +110,6 @@ class DeepQ:
             frame_count % self.update_after_actions == 0
             and len(self.done_history) > self.batch_size
         ):
-
             # Get indices of samples for replay buffers
             indices = np.random.choice(
                 range(len(self.done_history)), size=self.batch_size

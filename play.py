@@ -1,6 +1,7 @@
 from pong import Pong
 from ddpg import DDPG
 from deepq import DeepQ
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -11,9 +12,13 @@ def main():
     upper_bound = num_actions - 1
 
     episode = 0
-    max_episode = 10000
+    max_episode = 2
     max_steps_per_episode = 10000
     frame_count = 0
+
+    # history
+    lp_avg_reward_list = []
+    rp_avg_reward_list = []
 
     # Create the environment
     pong = Pong()
@@ -24,18 +29,18 @@ def main():
         num_inputs,
         lower_bound,
         upper_bound,
-        # actor_model_checkpoint="./checkpoints/ddpg_actor_model.h5",
-        # critic_model_checkpoint="./checkpoints/ddpg_critic_model.h5",
-        # target_actor_checkpoint="./checkpoints/ddpg_target_actor.h5",
-        # target_critic_checkpoint="./checkpoints/ddpg_target_critic.h5",
+        actor_checkpoint="./checkpoints\ddpg_actor_model.h5",
+        critic_checkpoint="./checkpoints\ddpg_critic_model.h5",
+        target_actor_checkpoint="./checkpoints\ddpg_target_actor.h5",
+        target_critic_checkpoint="./checkpoints\ddpg_target_critic.h5",
     )
 
     # right player
     deepq = DeepQ(
         num_inputs,
-        # num_actions,
-        # model_checkpoint="./checkpoints/deepq_model.h5",
-        # target_checkpoint="./checkpoints/deepq_model_target.h5",
+        num_actions,
+        model_checkpoint="./checkpoints/deepq_model.h5",
+        target_checkpoint="./checkpoints/deepq_model_target.h5",
     )
 
     while True:
@@ -65,6 +70,7 @@ def main():
             deepq.learn(prev_state, state, rp_action, rp_reward, frame_count, done)
 
             prev_state = state
+            frame_count = frame_count + 1
 
             if done:
                 break
@@ -89,9 +95,19 @@ def main():
                 episode, lp_avg_reward, rp_avg_reward
             )
         )
+        lp_avg_reward_list.append(lp_avg_reward)
+        rp_avg_reward_list.append(rp_avg_reward)
 
         if episode == max_episode:
             break
+
+    plt.plot(lp_avg_reward_list)
+    plt.plot(rp_avg_reward_list)
+    plt.xlabel("Episode")
+    plt.ylabel("Avg. Epsiode Reward")
+    plt.legend(loc="best")
+    plt.legend(["DDPG", "DeepQ"])
+    plt.show()
 
 
 if __name__ == "__main__":

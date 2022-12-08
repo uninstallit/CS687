@@ -11,7 +11,7 @@ def main():
     upper_bound = num_actions - 1
 
     episode = 0
-    max_episode = 10
+    max_episode = 10000
     max_steps_per_episode = 10000
     
     # history
