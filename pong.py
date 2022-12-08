@@ -266,7 +266,7 @@ class Pong:
             self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
             # reward for hitting the ball
-            lp_reward = lp_reward + 5
+            lp_reward = lp_reward + 10
 
         # right pad ball collision
         rp_x_collision = self.right_pad.xcor() - 30
@@ -288,7 +288,7 @@ class Pong:
             self.hit_ball.setx(rp_x_collision)
             self.hit_ball.dx *= -1
             # reward for hitting the ball
-            rp_reward = rp_reward + 5
+            rp_reward = rp_reward + 10
 
         # hit ball
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
