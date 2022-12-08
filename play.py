@@ -12,7 +12,7 @@ def main():
     upper_bound = num_actions - 1
 
     episode = 0
-    max_episode = 2
+    max_episode = 10000
     max_steps_per_episode = 10000
     frame_count = 0
 
@@ -22,7 +22,7 @@ def main():
 
     # Create the environment
     pong = Pong()
-    pong.set_silent(False)
+    pong.set_silent(True)
 
     # left player
     ddpg = DDPG(
@@ -91,7 +91,7 @@ def main():
             deepq.model_target.save_weights("./checkpoints/deepq_model_target.h5")
 
         print(
-            "Episode * {} * Left Avg Reward ==> {} - Right Avg Reward ==> {}".format(
+            "Episode * {} * DDPG Avg Reward ==> {} - DeepQ Avg Reward ==> {}".format(
                 episode, lp_avg_reward, rp_avg_reward
             )
         )
