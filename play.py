@@ -29,18 +29,18 @@ def main():
         num_inputs,
         lower_bound,
         upper_bound,
-        actor_checkpoint="./checkpoints\ddpg_actor_model.h5",
-        critic_checkpoint="./checkpoints\ddpg_critic_model.h5",
-        target_actor_checkpoint="./checkpoints\ddpg_target_actor.h5",
-        target_critic_checkpoint="./checkpoints\ddpg_target_critic.h5",
+        # actor_checkpoint="./checkpoints\ddpg_actor_model.h5",
+        # critic_checkpoint="./checkpoints\ddpg_critic_model.h5",
+        # target_actor_checkpoint="./checkpoints\ddpg_target_actor.h5",
+        # target_critic_checkpoint="./checkpoints\ddpg_target_critic.h5",
     )
 
     # right player
     deepq = DeepQ(
         num_inputs,
         num_actions,
-        model_checkpoint="./checkpoints/deepq_model.h5",
-        target_checkpoint="./checkpoints/deepq_model_target.h5",
+        # model_checkpoint="./checkpoints/deepq_model.h5",
+        # target_checkpoint="./checkpoints/deepq_model_target.h5",
     )
 
     while True:
