@@ -80,7 +80,7 @@ def main():
         rp_avg_reward = deepq.update_history(rp_episode_reward)
 
         # checkpoints
-        if episode % 1000 == 0:
+        if episode % 10 == 0:
             # checkpoints
             ddpg.actor_model.save_weights("./checkpoints/ddpg_actor_model.h5")
             ddpg.critic_model.save_weights("./checkpoints/ddpg_critic_model.h5")
