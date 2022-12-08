@@ -189,19 +189,6 @@ class Pong:
             self.pad_a_right()
         # else do nothing
 
-    # def left_step(self, action):
-    #     # print("action: ", action)
-    #     # move right paddle given action
-    #     if self.left_pad.ycor() <= 270 and action >= 0 and action < 0.5:
-    #         self.pad_a_up()
-    #     elif self.left_pad.ycor() >= -270 and action >= 0.5 and action < 1.5:
-    #         self.pad_a_down()
-    #     elif self.left_pad.xcor() >= -470 and action >= 1.5 and action < 2.5:
-    #         self.pad_a_left()
-    #     elif self.left_pad.xcor() <= 250 and action >= 2.5 and action < 3.5:
-    #         self.pad_a_right()
-    #     # else do nothing
-
     def right_step(self, action):
         # move paddle given action
         if self.right_pad.ycor() <= 270 and action >= 0 and action < 0.5:
