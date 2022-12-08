@@ -215,10 +215,10 @@ class Pong:
         # lp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
 
         ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
-        lp_reward = 0.00001 * (delta_max / max(ydelta, 0.01) )
+        lp_reward = 0.0001 * (delta_max / max(ydelta, 0.01) )
 
         ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
-        rp_reward =  0.00001 * (delta_max / max(ydelta, 0.01) )
+        rp_reward =  0.0001 * (delta_max / max(ydelta, 0.01) )
         # print("deep-q: ", rp_reward)
 
         # checking borders
