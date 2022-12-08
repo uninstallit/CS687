@@ -212,16 +212,13 @@ class Pong:
         lp_reward = 0
         rp_reward = 0
 
-        delta_max = 300
-
-        # ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
+        # delta_max = 300
         # lp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
         
         ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
         lp_reward = 1.0 / (ydelta + 0.01)
 
         ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
-        # rp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
         rp_reward  = 1.0 / (ydelta + 0.01)
 
         # checking borders
