@@ -177,7 +177,6 @@ class Pong:
         )
 
     def left_step(self, action):
-        # print("action: ", action)
         # move right paddle given action
         if self.left_pad.ycor() <= 270 and action >= -1 and action < -0.5:
             self.pad_a_up()
@@ -214,12 +213,12 @@ class Pong:
 
         # delta_max = 300
         # lp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
-        
+
         ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
         lp_reward = 1.0 / (ydelta + 0.01)
 
         ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
-        rp_reward  = 1.0 / (ydelta + 0.01)
+        rp_reward = 1.0 / (ydelta + 0.01)
 
         # checking borders
         if self.hit_ball.ycor() > 280:
@@ -236,14 +235,14 @@ class Pong:
             self.hit_ball.dx *= -1
             self.update_score_board()
             lp_reward = lp_reward + 100
-            # rp_reward = rp_reward - 100
+            rp_reward = rp_reward - 100
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
             self.right_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            # lp_reward = lp_reward - 100
+            lp_reward = lp_reward - 100
             rp_reward = rp_reward + 100
 
         # left pad ball collision
