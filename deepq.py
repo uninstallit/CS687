@@ -61,13 +61,9 @@ class DeepQ:
 
     def create_q_model(self):
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
-        common = tf.keras.layers.Dense(
-            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
-        )(inputs)
-        common = tf.keras.layers.Dense(
-            128, activation=tf.keras.layers.LeakyReLU(alpha=0.2)
-        )(common)
-        common = tf.keras.layers.Dense(128, activation="tanh")(common)
+        common = tf.keras.layers.Dense(128, activation="relu")(inputs)
+        common = tf.keras.layers.Dense(128, activation="relu")(common)
+        common = tf.keras.layers.Dense(128, activation="relu")(common)
         action = tf.keras.layers.Dense(self.num_actions, activation="linear")(common)
         model = tf.keras.Model(inputs=inputs, outputs=action)
         return model
