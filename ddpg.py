@@ -260,8 +260,8 @@ class DDPG:
         # Adding noise to action
         sampled_actions = sampled_actions.numpy() + noise
         # We make sure action is within bounds
-        # legal_action = np.clip(sampled_actions, self.lower_bound, self.upper_bound)
-        return np.squeeze(sampled_actions)
+        legal_action = np.clip(sampled_actions, self.lower_bound, self.upper_bound)
+        return np.squeeze(legal_action)
 
     # This update target parameters slowly
     # Based on rate `tau`, which is much less than one.

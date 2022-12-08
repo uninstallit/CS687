@@ -46,9 +46,9 @@ class DeepQ:
         self.episode_count = 0
         self.frame_count = 0
         # Number of frames to take random action and observe output
-        self.epsilon_random_frames = 50000
+        self.epsilon_random_frames = 2000
         # Number of frames for exploration
-        self.epsilon_greedy_frames = 1000000.0
+        self.epsilon_greedy_frames = 1000.0
         # Maximum replay length
         # Note: The Deepmind paper suggests 1000000 however this causes memory issues
         self.max_memory_length = 1000000
@@ -70,6 +70,7 @@ class DeepQ:
 
     def next_action(self, prev_state, frame_count):
         # Use epsilon-greedy for exploration
+        # print("{} - {} - {} - {}".format(frame_count, self.epsilon_random_frames, self.epsilon, np.random.rand(1)[0]))
         if (
             frame_count < self.epsilon_random_frames
             or self.epsilon > np.random.rand(1)[0]
@@ -82,6 +83,7 @@ class DeepQ:
             state_tensor = tf.convert_to_tensor(prev_state)
             state_tensor = tf.expand_dims(state_tensor, 0)
             action_probs = self.model(state_tensor, training=False)
+            # print("action_probs: ", action_probs)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
 
@@ -119,7 +121,7 @@ class DeepQ:
             done_sample = tf.convert_to_tensor(
                 [float(self.done_history[i]) for i in indices]
             )
-
+      
             # Build the updated Q-values for the sampled future states
             # Use the target model for stability
             future_rewards = self.model_target.predict(state_next_sample)
@@ -129,6 +131,7 @@ class DeepQ:
             )
             # If final frame set the last value to -1
             updated_q_values = updated_q_values * (1 - done_sample) - done_sample
+
             # Create a mask so we only calculate loss on the updated Q-values
             masks = tf.one_hot(action_sample, self.num_actions)
 
