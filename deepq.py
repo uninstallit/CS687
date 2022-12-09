@@ -57,7 +57,8 @@ class DeepQ:
         # How often to update the target network
         self.update_target_network = 10
         # Using huber loss for stability
-        self.loss_function = tf.keras.losses.Huber()
+        # self.loss_function = tf.keras.losses.Huber()
+        self.loss_function = tf.keras.losses.MeanAbsoluteError()
 
     def create_q_model(self):
         inputs = tf.keras.layers.Input(shape=(self.num_states,))
