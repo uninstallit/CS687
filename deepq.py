@@ -46,9 +46,9 @@ class DeepQ:
         self.episode_count = 0
         self.frame_count = 0
         # Number of frames to take random action and observe output
-        self.epsilon_random_frames = 2000
+        self.epsilon_random_frames = 5000
         # Number of frames for exploration
-        self.epsilon_greedy_frames = 1000.0
+        self.epsilon_greedy_frames = 10000.0
         # Maximum replay length
         # Note: The Deepmind paper suggests 1000000 however this causes memory issues
         self.max_memory_length = 1000000
@@ -122,7 +122,7 @@ class DeepQ:
             done_sample = tf.convert_to_tensor(
                 [float(self.done_history[i]) for i in indices]
             )
-      
+
             # Build the updated Q-values for the sampled future states
             # Use the target model for stability
             future_rewards = self.model_target.predict(state_next_sample)

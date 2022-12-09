@@ -106,7 +106,11 @@ class Pong:
         self.hit_ball.shape("circle")
         self.hit_ball.color("black")
         self.hit_ball.penup()
-        self.hit_ball.goto(0, 0)
+        rng = np.random.default_rng()
+        xcor = rng.uniform(low=-200, high=200)
+        rng = np.random.default_rng()
+        ycor = rng.uniform(low=-300.0, high=300)
+        self.hit_ball.goto(xcor, ycor)
 
         # self.hit_ball.dx = 5
         rng = np.random.default_rng()
@@ -219,7 +223,7 @@ class Pong:
         lp_reward = 0
         rp_reward = 0
 
-        delta_max = 300
+        delta_max = 600
 
         ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor()) + 1.0
         lp_reward = 0.01 * (delta_max / ydelta)
@@ -264,9 +268,16 @@ class Pong:
             # hit ball
             self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
-        elif (self.hit_ball.xcor() <= lp_x_collision + 5) and (
-            self.hit_ball.ycor() <= self.left_pad.ycor() + 60
-            and self.hit_ball.ycor() >= self.left_pad.ycor() - 60
+        elif (
+            (
+                self.hit_ball.xcor() >= lp_x_collision
+                and self.hit_ball.xcor() <= lp_x_collision + 30
+            )
+            and (
+                self.hit_ball.ycor() <= self.left_pad.ycor() + 60
+                and self.hit_ball.ycor() >= self.left_pad.ycor() - 60
+            )
+            and (self.hit_ball.dx < 0)
         ):
             # cheat - help to not double hit
             self.left_pad.setx(lp_x_collision - 100)
@@ -286,9 +297,16 @@ class Pong:
             # hit ball
             self.hit_ball.setx(rp_x_collision)
             self.hit_ball.dx *= -1
-        elif (self.hit_ball.xcor() >= rp_x_collision - 5) and (
-            self.hit_ball.ycor() <= self.right_pad.ycor() + 60
-            and self.hit_ball.ycor() >= self.right_pad.ycor() - 60
+        elif (
+            (
+                self.hit_ball.xcor() <= rp_x_collision
+                and self.hit_ball.xcor() >= rp_x_collision - 30
+            )
+            and (
+                self.hit_ball.ycor() <= self.right_pad.ycor() + 60
+                and self.hit_ball.ycor() >= self.right_pad.ycor() - 60
+            )
+            and (self.hit_ball.dx > 0)
         ):
             # cheat - help to not double hit
             self.right_pad.setx(rp_x_collision + 100)
