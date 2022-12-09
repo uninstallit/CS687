@@ -119,7 +119,7 @@ class Buffer:
 
         actor_grad = tape.gradient(actor_loss, self.actor_model.trainable_variables)
         # if actor_grad[0][0][0] == 0:
-        #     tf.print("grad are fading: ", actor_grad[0][0][0])
+        #     tf.  mnxc("grad are fading: ", actor_grad[0][0][0])
 
         self.actor_optimizer.apply_gradients(
             zip(actor_grad, self.actor_model.trainable_variables)
@@ -156,7 +156,7 @@ class DDPG:
         self.upper_bound = upper_bound
 
         # hyperparams
-        self.std_dev = 0.2
+        self.std_dev = 0.5
         self.ou_noise = OUActionNoise(
             mean=np.zeros(1), std_deviation=float(self.std_dev) * np.ones(1)
         )
@@ -182,8 +182,8 @@ class DDPG:
         self.target_critic.set_weights(self.critic_model.get_weights())
 
         # Learning rate for actor-critic models
-        self.critic_lr = 0.0002
-        self.actor_lr = 0.0001
+        self.critic_lr = 0.002
+        self.actor_lr = 0.001
 
         self.critic_optimizer = tf.keras.optimizers.Adam(self.critic_lr, clipnorm=1.0)
         self.actor_optimizer = tf.keras.optimizers.Adam(self.actor_lr, clipnorm=1.0)
@@ -191,7 +191,7 @@ class DDPG:
         # Discount factor for future rewards
         self.gamma = 0.99
         # Used to update target networks
-        self.tau = 0.001
+        self.tau = 0.01
 
         self.buffer = Buffer(
             num_states=self.num_states,

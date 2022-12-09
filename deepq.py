@@ -55,7 +55,7 @@ class DeepQ:
         # Train the model after 4 actions
         self.update_after_actions = 4
         # How often to update the target network
-        self.update_target_network = 10000
+        self.update_target_network = 10
         # Using huber loss for stability
         self.loss_function = tf.keras.losses.Huber()
 

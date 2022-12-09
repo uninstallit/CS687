@@ -211,14 +211,14 @@ class Pong:
         lp_reward = 0
         rp_reward = 0
 
-        delta_max = 300.1
+        delta_max = 300
         # lp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
 
-        ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor())
-        lp_reward = 0.0001 * (delta_max / max(ydelta, 0.01) )
+        ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor()) + 1.0
+        lp_reward = 0.01 * (delta_max / ydelta)
 
-        ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor())
-        rp_reward =  0.0001 * (delta_max / max(ydelta, 0.01) )
+        ydelta = np.abs(self.right_pad.ycor() - self.hit_ball.ycor()) + 1.0
+        rp_reward = 0.01 * (delta_max / ydelta)
         # print("deep-q: ", rp_reward)
 
         # checking borders
@@ -235,16 +235,16 @@ class Pong:
             self.left_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            lp_reward = lp_reward + 1
-            rp_reward = rp_reward - 1
+            lp_reward = lp_reward + 10
+            rp_reward = rp_reward - 10
 
         if self.hit_ball.xcor() < -500:
             self.hit_ball.goto(0, 0)
             self.right_player += 1
             self.hit_ball.dx *= -1
             self.update_score_board()
-            lp_reward = lp_reward - 1
-            rp_reward = rp_reward + 1
+            lp_reward = lp_reward - 10
+            rp_reward = rp_reward + 10
 
         # left pad ball collision
         lp_x_collision = self.left_pad.xcor() + 30
@@ -266,7 +266,7 @@ class Pong:
             self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
             # reward for hitting the ball
-            lp_reward = lp_reward + 10
+            lp_reward = lp_reward + 100
 
         # right pad ball collision
         rp_x_collision = self.right_pad.xcor() - 30
@@ -288,7 +288,7 @@ class Pong:
             self.hit_ball.setx(rp_x_collision)
             self.hit_ball.dx *= -1
             # reward for hitting the ball
-            rp_reward = rp_reward + 10
+            rp_reward = rp_reward + 100
 
         # hit ball
         self.hit_ball.setx(self.hit_ball.xcor() + self.hit_ball.dx)
