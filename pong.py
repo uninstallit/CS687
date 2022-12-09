@@ -84,6 +84,8 @@ class Pong:
         self.left_pad.shapesize(stretch_wid=6, stretch_len=2)
         self.left_pad.penup()
         rng = np.random.default_rng()
+        xcor = rng.uniform(low=-500, high=-300)
+        rng = np.random.default_rng()
         ycor = rng.uniform(low=-300.0, high=300)
         self.left_pad.goto(-400, ycor)
 
@@ -94,8 +96,10 @@ class Pong:
         self.right_pad.shapesize(stretch_wid=6, stretch_len=2)
         self.right_pad.penup()
         rng = np.random.default_rng()
+        xcor = rng.uniform(low=300, high=500)
+        rng = np.random.default_rng()
         ycor = rng.uniform(low=-300.0, high=300)
-        self.right_pad.goto(400, ycor)
+        self.right_pad.goto(xcor, ycor)
 
         # ball of circle shape
         self.hit_ball.speed(0)
