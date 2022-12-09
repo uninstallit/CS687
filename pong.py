@@ -83,7 +83,9 @@ class Pong:
         self.left_pad.color("blue")
         self.left_pad.shapesize(stretch_wid=6, stretch_len=2)
         self.left_pad.penup()
-        self.left_pad.goto(-400, 0)
+        rng = np.random.default_rng()
+        ycor = rng.uniform(low=-300.0, high=300)
+        self.left_pad.goto(-400, ycor)
 
         # right pad
         self.right_pad.speed(0)
@@ -91,7 +93,9 @@ class Pong:
         self.right_pad.color("red")
         self.right_pad.shapesize(stretch_wid=6, stretch_len=2)
         self.right_pad.penup()
-        self.right_pad.goto(400, 0)
+        rng = np.random.default_rng()
+        ycor = rng.uniform(low=-300.0, high=300)
+        self.right_pad.goto(400, ycor)
 
         # ball of circle shape
         self.hit_ball.speed(0)
@@ -212,7 +216,6 @@ class Pong:
         rp_reward = 0
 
         delta_max = 300
-        # lp_reward = 0.1 * (np.square(1.0 - (ydelta / delta_max)) - 0.5)
 
         ydelta = np.abs(self.left_pad.ycor() - self.hit_ball.ycor()) + 1.0
         lp_reward = 0.01 * (delta_max / ydelta)
@@ -257,7 +260,7 @@ class Pong:
             # hit ball
             self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
-        elif (self.hit_ball.xcor() == lp_x_collision) and (
+        elif (self.hit_ball.xcor() <= lp_x_collision + 5) and (
             self.hit_ball.ycor() <= self.left_pad.ycor() + 60
             and self.hit_ball.ycor() >= self.left_pad.ycor() - 60
         ):
@@ -279,7 +282,7 @@ class Pong:
             # hit ball
             self.hit_ball.setx(rp_x_collision)
             self.hit_ball.dx *= -1
-        elif (self.hit_ball.xcor() == rp_x_collision) and (
+        elif (self.hit_ball.xcor() >= rp_x_collision + 5) and (
             self.hit_ball.ycor() <= self.right_pad.ycor() + 60
             and self.hit_ball.ycor() >= self.right_pad.ycor() - 60
         ):
