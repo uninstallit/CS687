@@ -26,7 +26,7 @@ class Pong:
         # Keyboard bindings
         self.sc.listen()
         self.sc.onkeypress(self.pad_a_up, "e")
-        self.sc.onkeypress(self.pad_a_down, "x")
+        self.sc.onkeypress(self.pad_a_down, "s")
 
         self.sc.onkeypress(self.pad_b_up, "Up")
         self.sc.onkeypress(self.pad_b_down, "Down")
@@ -87,7 +87,7 @@ class Pong:
         xcor = rng.uniform(low=-500, high=-300)
         rng = np.random.default_rng()
         ycor = rng.uniform(low=-300.0, high=300)
-        self.left_pad.goto(-400, ycor)
+        self.left_pad.goto(xcor, ycor)
 
         # right pad
         self.right_pad.speed(0)
@@ -264,7 +264,7 @@ class Pong:
             # hit ball
             self.hit_ball.setx(lp_x_collision)
             self.hit_ball.dx *= -1
-        elif (self.hit_ball.xcor() <= lp_x_collision + 1) and (
+        elif (self.hit_ball.xcor() <= lp_x_collision + 5) and (
             self.hit_ball.ycor() <= self.left_pad.ycor() + 60
             and self.hit_ball.ycor() >= self.left_pad.ycor() - 60
         ):
@@ -286,7 +286,7 @@ class Pong:
             # hit ball
             self.hit_ball.setx(rp_x_collision)
             self.hit_ball.dx *= -1
-        elif (self.hit_ball.xcor() >= rp_x_collision + 1) and (
+        elif (self.hit_ball.xcor() >= rp_x_collision - 5) and (
             self.hit_ball.ycor() <= self.right_pad.ycor() + 60
             and self.hit_ball.ycor() >= self.right_pad.ycor() - 60
         ):
